@@ -9,6 +9,8 @@ import "./Models";
 import { connectDB } from "./mongoDB-setup";
 import { requestLogger } from "./Middlewares/logger";
 import vehicleModelRouter from "./Routes/vehicleModelRoutes";
+import vehicleRouter from "./Routes/vehicleRoutes";
+import batteryRouter from "./Routes/batteryRoutes";
 import ErrorHandler from "./Middlewares/errorHandler";
 
 const app = express();
@@ -23,6 +25,7 @@ app.use(
 );
 app.use(helmet());
 app.use(requestLogger);
+app.use(ErrorHandler);
 
 async function startServer() {
   try {
@@ -57,5 +60,5 @@ app.get(`${Config.API_PREFIX}health`, async (req: Request, res: Response) => {
 });
 
 app.use(`${Config.API_PREFIX}vehicleModels`, vehicleModelRouter);
-
-app.use(ErrorHandler);
+app.use(`${Config.API_PREFIX}batteries`, batteryRouter);
+app.use(`${Config.API_PREFIX}vehicles`, vehicleRouter);

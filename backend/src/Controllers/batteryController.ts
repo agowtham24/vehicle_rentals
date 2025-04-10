@@ -3,32 +3,31 @@ import { MongooseService } from "../mongoDB-setup";
 
 const service = new MongooseService();
 
-export const createVehicleModel = async (
+export const createBattery = async (
   req: Request,
   res: any,
   next: NextFunction
 ) => {
   try {
-    const data = await service.create("vehicleModels", req.body);
+    const data = await service.create("batteries", req.body);
     return res.status(201).json({ status: true, message: "success", data });
   } catch (error) {
     next(error);
   }
 };
 
-export async function getAllVehicleModels(
+export async function getAllBatteries(
   req: Request,
   res: any,
   next: NextFunction
 ) {
   try {
-    const data = await service.aggregate("vehicleModels", [
+    const data = await service.aggregate("batteries", [
       {
         $project: {
           name: 1,
-          batterySlots: 1,
           manufactureBy: 1,
-          isSwapable:1
+          status:1
         },
       },
     ]);
@@ -38,14 +37,14 @@ export async function getAllVehicleModels(
   }
 }
 
-export const updateVehicleModel = async (
+export const updateBatteries = async (
   req: Request,
   res: any,
   next: NextFunction
 ) => {
   try {
     const data = await service.updateOne(
-      "vehicleModels",
+      "batteries",
       { _id: req.params.id },
       { ...req.body }
     );
