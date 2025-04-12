@@ -1,5 +1,6 @@
-import { NextFunction, Request, Response } from "express";
-import jwt, { JwtPayload } from "jsonwebtoken";
+import { Request, Response, NextFunction } from "express";
+import jwt, { JwtPayload, SignOptions } from "jsonwebtoken";
+import fs from "fs";
 import Config from "../config";
 
 declare module "express-serve-static-core" {
@@ -8,42 +9,42 @@ declare module "express-serve-static-core" {
   }
 }
 
-export class Jwt {
-  static secret: string = Config.JWT_SECRET || "defaultSecretKey";
+const privateKey = fs.readFileSync(Config.JWT_PRIVATE_KEY_PATH, "utf8");
+const publicKey = fs.readFileSync(Config.JWT_PUBLIC_KEY_PATH, "utf8");
 
-  // Verify token middleware
-  static async verifyToken(req: Request, res: Response, next: NextFunction) {
-    try {
-      const token = req.headers.authorization?.split(" ")[1];
+export function verifyToken(req: Request, res: any, next: NextFunction) {
+  try {
+    const authHeader = req.headers.authorization;
+    if (!authHeader?.startsWith("Bearer ")) {
+      return res.status(401).json({ error: "Authorization header malformed" });
+    }
 
-      if (!token) {
-        return res.status(401).json({ error: "Unauthorized" });
+    const token = authHeader.split(" ")[1];
+
+    jwt.verify(token, publicKey, { algorithms: ["RS256"] }, (err, decoded) => {
+      if (err) {
+        return res.status(401).json({ error: "Invalid or expired token" });
       }
 
-      jwt.verify(token, Jwt.secret, (err, decoded) => {
-        if (err) {
-          return res.status(400).json({ error: "Please login again" });
-        }
-
-        req.user = decoded;
-        next();
-      });
-    } catch (error: any) {
-      res.status(500).json({ error: error.message });
-    }
+      req.user = decoded;
+      next();
+    });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
   }
+}
 
-  // Generate a JWT token
-  static async generateToken(
-    data: Record<string, any>,
-    expiresIn: string = "1d"
-  ) {
-    try {
-      const token = jwt.sign(data, this.secret, { expiresIn: "1d" });
-      return token;
-    } catch (error: any) {
-      console.error("Error generating token:", error.message);
-      throw new Error("Token generation failed");
-    }
+export function generateToken(payload: Record<string, any>): string {
+  try {
+    const signOptions: SignOptions = {
+      algorithm: "RS256",
+      expiresIn: "1d",
+      keyid: "key-1",
+    };
+
+    return jwt.sign(payload, privateKey as jwt.Secret, signOptions);
+  } catch (error: any) {
+    console.error("Error generating token:", error.message);
+    throw new Error("Token generation failed");
   }
 }

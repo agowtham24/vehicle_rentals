@@ -4,7 +4,8 @@ const Config = {
   NODE_ENV: process.env.NODE_ENV,
   DB_URL: process.env.DB_URL,
   API_PREFIX: process.env.API_PREFIX || "/api/v1/",
-  JWT_SECRET:process.env.JWT_SECRET||"Naruto Uzumaki"
+  JWT_PRIVATE_KEY_PATH: "./keys/privateKey.pem",
+  JWT_PUBLIC_KEY_PATH: "./keys/publicKey.pem",
 };
 
 export default Config;

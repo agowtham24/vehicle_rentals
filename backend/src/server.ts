@@ -11,6 +11,9 @@ import { requestLogger } from "./Middlewares/logger";
 import vehicleModelRouter from "./Routes/vehicleModelRoutes";
 import vehicleRouter from "./Routes/vehicleRoutes";
 import batteryRouter from "./Routes/batteryRoutes";
+import bussinessAccountRouter from "./Routes/bussinessAccountRoutes";
+import bussinessPricingRouter from "./Routes/bussinessPricingRoutes";
+import riderRouter from "./Routes/riderRoutes";
 import ErrorHandler from "./Middlewares/errorHandler";
 
 const app = express();
@@ -62,3 +65,6 @@ app.get(`${Config.API_PREFIX}health`, async (req: Request, res: Response) => {
 app.use(`${Config.API_PREFIX}vehicleModels`, vehicleModelRouter);
 app.use(`${Config.API_PREFIX}batteries`, batteryRouter);
 app.use(`${Config.API_PREFIX}vehicles`, vehicleRouter);
+app.use(`${Config.API_PREFIX}bussinessAccounts`, bussinessAccountRouter);
+app.use(`${Config.API_PREFIX}bussinessPricings`, bussinessPricingRouter);
+app.use(`${Config.API_PREFIX}riders`, riderRouter);

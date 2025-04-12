@@ -22,16 +22,7 @@ export async function getAllVehicleModels(
   next: NextFunction
 ) {
   try {
-    const data = await service.aggregate("vehicleModels", [
-      {
-        $project: {
-          name: 1,
-          batterySlots: 1,
-          manufactureBy: 1,
-          isSwapable:1
-        },
-      },
-    ]);
+    const data = await service.find("vehicleModels");
     return res.status(200).json({ status: true, message: "success", data });
   } catch (error) {
     next(error);

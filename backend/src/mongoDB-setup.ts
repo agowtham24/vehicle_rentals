@@ -25,10 +25,7 @@ export class MongooseService {
     return mongoose.model<T>(collectionName);
   }
 
-  async create<T extends Document>(
-    collectionName: string,
-    data: Partial<T>
-  ): Promise<T> {
+  async create<T extends Document>(collectionName: string, data: Partial<T>) {
     const model = this.getModel<T>(collectionName);
     const doc = new model(data);
     return await doc.save();
@@ -38,7 +35,7 @@ export class MongooseService {
     collectionName: string,
     filter: FilterQuery<T>,
     update: UpdateQuery<T>
-  ): Promise<T | null> {
+  ) {
     const model = this.getModel<T>(collectionName);
     return await model.findOneAndUpdate(filter, update, { new: true }).exec();
   }
@@ -46,7 +43,7 @@ export class MongooseService {
   async deleteOne<T extends Document>(
     collectionName: string,
     filter: FilterQuery<T>
-  ): Promise<T | null> {
+  ) {
     const model = this.getModel<T>(collectionName);
     return await model.findOneAndDelete(filter).exec();
   }
@@ -54,8 +51,28 @@ export class MongooseService {
   async aggregate<T extends Document>(
     collectionName: string,
     pipeline: PipelineStage[]
-  ): Promise<any[]> {
+  ) {
     const model = this.getModel<T>(collectionName);
     return await model.aggregate(pipeline).exec();
+  }
+
+  async find<T extends Document>(
+    collectionName: string,
+    filter: FilterQuery<T> = {},
+    projection: any = {},
+    options: any = {}
+  ) {
+    const model = this.getModel<T>(collectionName);
+    return await model.find(filter, projection, options).lean().exec();
+  }
+
+  async findOne<T extends Document>(
+    collectionName: string,
+    filter: FilterQuery<T> = {},
+    projection: any = {},
+    options: any = {}
+  ) {
+    const model = this.getModel<T>(collectionName);
+    return await model.findOne(filter, projection, options).lean().exec();
   }
 }
