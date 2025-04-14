@@ -1,5 +1,6 @@
 import mongoose, { Schema, Document } from "mongoose";
-
+import Config from "../config";
+const DB_COLLECTIONS = Config.DB_COLLECTIONS;
 interface BatterySchema extends Document {
   name: string;
   assetId: string;
@@ -7,6 +8,7 @@ interface BatterySchema extends Document {
   manufacturingDate: Date;
   PurchaseDate: Date;
   status: string;
+  rentalId: mongoose.Schema.Types.ObjectId;
 }
 
 const batterySchema = new Schema<BatterySchema>(
@@ -21,6 +23,7 @@ const batterySchema = new Schema<BatterySchema>(
       enum: ["READY_TO_ASSIGN", "ASSIGNED", "IN_SERVICE"],
       default: "READY_TO_ASSIGN",
     },
+    rentalId: { type: mongoose.Schema.Types.ObjectId, ref: "rentals" },
   },
   {
     timestamps: true,
@@ -28,5 +31,5 @@ const batterySchema = new Schema<BatterySchema>(
 );
 
 export const batteryModel =
-  mongoose.models.batteries ||
-  mongoose.model<BatterySchema>("batteries", batterySchema);
+  mongoose.models[DB_COLLECTIONS.batteries] ||
+  mongoose.model<BatterySchema>(DB_COLLECTIONS.batteries, batterySchema);

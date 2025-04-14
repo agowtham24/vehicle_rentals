@@ -1,4 +1,6 @@
 import mongoose, { Schema, Document } from "mongoose";
+import Config from "../config";
+const DB_COLLECTIONS = Config.DB_COLLECTIONS;
 
 type Plan = {
   type: string; //day|week
@@ -35,12 +37,12 @@ const bussinessPricingSchema = new Schema<BussinessPricingSchema>(
   {
     bussinessId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "bussinessAccounts",
+      ref: DB_COLLECTIONS.bussinessAccounts,
       required: true,
     },
     vehicleModelId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "vehicleModels",
+      ref: DB_COLLECTIONS.vehicleModels,
       required: true,
     },
     plans: { type: [planSchema], required: true },
@@ -51,8 +53,8 @@ const bussinessPricingSchema = new Schema<BussinessPricingSchema>(
 );
 
 export const bussinessPricingModel =
-  mongoose.models.bussinessPricings ||
+  mongoose.models[DB_COLLECTIONS.bussinessPricings] ||
   mongoose.model<BussinessPricingSchema>(
-    "bussinessPricings",
+    DB_COLLECTIONS.bussinessPricings,
     bussinessPricingSchema
   );

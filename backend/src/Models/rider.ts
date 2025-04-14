@@ -1,5 +1,6 @@
 import mongoose, { Schema, Document } from "mongoose";
-
+import Config from "../config";
+const DB_COLLECTIONS = Config.DB_COLLECTIONS;
 interface RiderSchema extends Document {
   mobile: string;
   status: string;
@@ -17,18 +18,24 @@ const riderSchema = new Schema<RiderSchema>(
     mobile: { type: String, required: true, unique: true },
     status: {
       type: String,
-      enum: ["ACTIVE", "ON_RIDE", "BLACK_LISTED"],
+      enum: ["ACTIVE", "ASSIGNED", "BLACK_LISTED"],
       default: "ACTIVE",
     },
     isActiveRide: { type: Boolean, default: false },
     isSdPaid: { type: Boolean, default: false },
     isRentPaid: { type: Boolean },
     sdAmount: { type: Number },
-    vehicleId: { type: mongoose.Schema.Types.ObjectId, ref: "vehicles" },
-    rentalId: { type: mongoose.Schema.Types.ObjectId, ref: "rentals" },
+    vehicleId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: DB_COLLECTIONS.vehicles,
+    },
+    rentalId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: DB_COLLECTIONS.rentals,
+    },
     bussinessId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "bussinessAccounts",
+      ref: DB_COLLECTIONS.bussinessAccounts,
     },
   },
   {
@@ -37,4 +44,5 @@ const riderSchema = new Schema<RiderSchema>(
 );
 
 export const riderModel =
-  mongoose.models.riders || mongoose.model<RiderSchema>("riders", riderSchema);
+  mongoose.models[DB_COLLECTIONS.riders] ||
+  mongoose.model<RiderSchema>(DB_COLLECTIONS.riders, riderSchema);

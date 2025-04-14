@@ -1,5 +1,7 @@
 import { Request, NextFunction } from "express";
 import { convertToObjectId, MongooseService } from "../mongoDB-setup";
+import Config from "../config";
+const DB_COLLECTIONS = Config.DB_COLLECTIONS;
 
 const service = new MongooseService();
 
@@ -10,7 +12,7 @@ export const createBussinessPricing = async (
 ) => {
   try {
     const { vehicleModelId, bussinessId } = req.body;
-    const isExisting = await service.findOne("bussinessPricings", {
+    const isExisting = await service.findOne(DB_COLLECTIONS.bussinessPricings, {
       bussinessId,
       vehicleModelId,
     });
@@ -33,7 +35,7 @@ export async function getByBussinessAndVehicleModel(
   try {
     const { bussinessId, vehicleModelId } = req.query;
 
-    const data = await service.aggregate("bussinessPricings", [
+    const data = await service.aggregate(DB_COLLECTIONS.bussinessPricings, [
       {
         $match: {
           bussinessId: await convertToObjectId(bussinessId as string),
@@ -59,7 +61,7 @@ export const updateBussinessPricing = async (
 ) => {
   try {
     await service.updateOne(
-      "bussinessPricings",
+      DB_COLLECTIONS.bussinessPricings,
       { _id: req.params.id },
       { ...req.body }
     );

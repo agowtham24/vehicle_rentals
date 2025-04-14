@@ -4,11 +4,17 @@ import {
   getAllVehicleModels,
   updateVehicleModel,
 } from "../Controllers/vehicleModelController";
-
+import { VehicleModelValidator } from "../Validations/vehicleModel";
+import { verifyToken } from "../Utils/Jwt";
 const vehicleModelRouter = Router();
 
-vehicleModelRouter.post("/", createVehicleModel);
-vehicleModelRouter.get("/", getAllVehicleModels);
-vehicleModelRouter.patch("/:id", updateVehicleModel);
+vehicleModelRouter.post(
+  "/",
+  verifyToken,
+  VehicleModelValidator.createVehicleModel,
+  createVehicleModel
+);
+vehicleModelRouter.get("/", verifyToken, getAllVehicleModels);
+vehicleModelRouter.patch("/:id", verifyToken, updateVehicleModel);
 
 export default vehicleModelRouter;

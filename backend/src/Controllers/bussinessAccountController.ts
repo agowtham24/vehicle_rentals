@@ -2,6 +2,8 @@ import { Request, NextFunction } from "express";
 import { MongooseService } from "../mongoDB-setup";
 import { Bcrypt } from "../Utils/Bcrypt";
 import { generateToken } from "../Utils/Jwt";
+import Config from "../config";
+const DB_COLLECTIONS = Config.DB_COLLECTIONS;
 
 const service = new MongooseService();
 
@@ -12,7 +14,7 @@ export const createBussinessAccount = async (
 ) => {
   try {
     req.body.password = await Bcrypt.hashPassword(req.body.password);
-    await service.create("bussinessAccounts", req.body);
+    await service.create(DB_COLLECTIONS.bussinessAccounts, req.body);
     return res.status(201).json({ status: true, message: "success" });
   } catch (error) {
     next(error);
@@ -25,7 +27,11 @@ export async function getAllBussinessAccounts(
   next: NextFunction
 ) {
   try {
-    const data = await service.find("bussinessAccounts",{},{password:0});
+    const data = await service.find(
+      DB_COLLECTIONS.bussinessAccounts,
+      {},
+      { password: 0 }
+    );
     return res.status(200).json({ status: true, message: "success", data });
   } catch (error) {
     next(error);
@@ -41,7 +47,7 @@ export const updateBussinessAccount = async (
     if (req.body.password)
       req.body.password = await Bcrypt.hashPassword(req.body.password);
     await service.updateOne(
-      "bussinessAccounts",
+      DB_COLLECTIONS.bussinessAccounts,
       { _id: req.params.id },
       { ...req.body }
     );
@@ -59,7 +65,7 @@ export const loginBussiness = async (
   try {
     const { email, password } = req.body;
     const isExistingAccount: any = await service.findOne(
-      "bussinessAccounts",
+      DB_COLLECTIONS.bussinessAccounts,
       { email },
       { password: 1, email: 1 }
     );

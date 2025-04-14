@@ -6,6 +6,15 @@ const Config = {
   API_PREFIX: process.env.API_PREFIX || "/api/v1/",
   JWT_PRIVATE_KEY_PATH: "./keys/privateKey.pem",
   JWT_PUBLIC_KEY_PATH: "./keys/publicKey.pem",
+  DB_COLLECTIONS: {
+    batteries: "batteries",
+    bussinessPricings: "bussinessPricings",
+    bussinessAccounts: "bussinessAccounts",
+    rentals: "rentals",
+    riders: "riders",
+    vehicles: "vehicles",
+    vehicleModels: "vehicleModels",
+  },
 };
 
 export default Config;

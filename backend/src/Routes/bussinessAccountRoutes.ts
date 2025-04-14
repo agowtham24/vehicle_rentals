@@ -6,11 +6,17 @@ import {
   loginBussiness,
 } from "../Controllers/bussinessAccountController";
 import { verifyToken } from "../Utils/Jwt";
+import { BussinessAccountValidator } from "../Validations/bussinessAccount";
 const bussinessAccountRouter = Router();
 
-bussinessAccountRouter.post("/", createBussinessAccount);
+bussinessAccountRouter.post(
+  "/",
+  verifyToken,
+  BussinessAccountValidator.createBussinessAccount,
+  createBussinessAccount
+);
 bussinessAccountRouter.get("/", verifyToken, getAllBussinessAccounts);
-bussinessAccountRouter.patch("/:id", updateBussinessAccount);
+bussinessAccountRouter.patch("/:id", verifyToken, updateBussinessAccount);
 bussinessAccountRouter.post("/login", loginBussiness);
 
 export default bussinessAccountRouter;

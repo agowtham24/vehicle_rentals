@@ -1,5 +1,7 @@
 import { Request, NextFunction } from "express";
 import { MongooseService } from "../mongoDB-setup";
+import Config from "../config";
+const DB_COLLECTIONS = Config.DB_COLLECTIONS;
 
 const service = new MongooseService();
 
@@ -9,7 +11,7 @@ export const createRider = async (
   next: NextFunction
 ) => {
   try {
-    await service.create("riders", req.body);
+    await service.create(DB_COLLECTIONS.riders, req.body);
     return res.status(201).json({ status: true, message: "success" });
   } catch (error) {
     next(error);
@@ -25,7 +27,7 @@ export async function getRiderByMobile(
     const { mobile } = req.query;
     const regex = new RegExp(mobile as string, "i");
     const data = await service.find(
-      "riders",
+      DB_COLLECTIONS.riders,
       { mobile: { $regex: regex } },
       { mobile: 1, status: 1 }
     );
@@ -41,7 +43,11 @@ export const updateRider = async (
   next: NextFunction
 ) => {
   try {
-    await service.updateOne("riders", { _id: req.params.id }, { ...req.body });
+    await service.updateOne(
+      DB_COLLECTIONS.riders,
+      { _id: req.params.id },
+      { ...req.body }
+    );
     return res.status(200).json({ status: true, message: "success" });
   } catch (error) {
     next(error);

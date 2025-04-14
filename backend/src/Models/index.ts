@@ -4,3 +4,4 @@ import "./vehicle";
 import "./bussinessAccount";
 import "./bussinesPricings";
 import "./rider";
+import "./rental";

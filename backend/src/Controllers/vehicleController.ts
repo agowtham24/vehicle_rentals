@@ -1,5 +1,7 @@
 import { Request, NextFunction } from "express";
 import { MongooseService } from "../mongoDB-setup";
+import Config from "../config";
+const DB_COLLECTIONS = Config.DB_COLLECTIONS;
 
 const service = new MongooseService();
 
@@ -9,7 +11,7 @@ export const createVehicle = async (
   next: NextFunction
 ) => {
   try {
-    await service.create("vehicles", req.body);
+    await service.create(DB_COLLECTIONS.vehicles, req.body);
     return res.status(201).json({ status: true, message: "success" });
   } catch (error) {
     next(error);
@@ -23,7 +25,7 @@ export async function getVehiclesByStatus(
 ) {
   try {
     const { status } = req.query;
-    const data = await service.aggregate("vehicles", [
+    const data = await service.aggregate(DB_COLLECTIONS.vehicles, [
       {
         $match: { status },
       },
@@ -111,7 +113,7 @@ export const updateVehicles = async (
 ) => {
   try {
     await service.updateOne(
-      "vehicles",
+      DB_COLLECTIONS.vehicles,
       { _id: req.params.id },
       { ...req.body }
     );

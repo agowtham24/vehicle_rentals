@@ -40,6 +40,15 @@ export class MongooseService {
     return await model.findOneAndUpdate(filter, update, { new: true }).exec();
   }
 
+  async updateMany<T extends Document>(
+    collectionName: string,
+    filter: FilterQuery<T>,
+    update: UpdateQuery<T>
+  ) {
+    const model = this.getModel<T>(collectionName);
+    return await model.updateMany(filter, update).exec();
+  }
+
   async deleteOne<T extends Document>(
     collectionName: string,
     filter: FilterQuery<T>

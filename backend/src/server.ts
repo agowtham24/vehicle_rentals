@@ -14,6 +14,7 @@ import batteryRouter from "./Routes/batteryRoutes";
 import bussinessAccountRouter from "./Routes/bussinessAccountRoutes";
 import bussinessPricingRouter from "./Routes/bussinessPricingRoutes";
 import riderRouter from "./Routes/riderRoutes";
+import rentalRouter from "./Routes/rentalRoutes";
 import ErrorHandler from "./Middlewares/errorHandler";
 
 const app = express();
@@ -68,3 +69,4 @@ app.use(`${Config.API_PREFIX}vehicles`, vehicleRouter);
 app.use(`${Config.API_PREFIX}bussinessAccounts`, bussinessAccountRouter);
 app.use(`${Config.API_PREFIX}bussinessPricings`, bussinessPricingRouter);
 app.use(`${Config.API_PREFIX}riders`, riderRouter);
+app.use(`${Config.API_PREFIX}rentals`, rentalRouter);

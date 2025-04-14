@@ -1,5 +1,6 @@
 import mongoose, { Schema, Document } from "mongoose";
-
+import Config from "../config";
+const DB_COLLECTIONS = Config.DB_COLLECTIONS;
 interface VehicleModelSchema extends Document {
   name: string;
   manufactureBy: string;
@@ -22,5 +23,8 @@ const vehicleModelSchema = new Schema<VehicleModelSchema>(
 );
 
 export const vehicleModel =
-  mongoose.models.vehicleModels ||
-  mongoose.model<VehicleModelSchema>("vehicleModels", vehicleModelSchema);
+  mongoose.models[DB_COLLECTIONS.vehicleModels] ||
+  mongoose.model<VehicleModelSchema>(
+    DB_COLLECTIONS.vehicleModels,
+    vehicleModelSchema
+  );
