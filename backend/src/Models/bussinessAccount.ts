@@ -15,6 +15,7 @@ interface BussinessAccountSchema extends Document {
   password: string;
   status: string; //['ACTIVE','IN_ACTIVE']
   role: string;
+  loginCount: number;
 }
 
 const bussinessAccountSchema = new Schema<BussinessAccountSchema>(
@@ -32,6 +33,7 @@ const bussinessAccountSchema = new Schema<BussinessAccountSchema>(
     },
     password: { type: String, required: true },
     status: { type: String, enum: ["ACTIVE", "IN_ACTIVE"], default: "ACTIVE" },
+    loginCount: { type: Number, default: 0 },
   },
   {
     timestamps: true,

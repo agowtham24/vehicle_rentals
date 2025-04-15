@@ -1,8 +1,10 @@
-import { Request, Response, NextFunction } from "express";
+import { Request, NextFunction } from "express";
 import jwt, { JwtPayload, SignOptions } from "jsonwebtoken";
 import fs from "fs";
 import Config from "../config";
-
+import { MongooseService } from "../mongoDB-setup";
+const DB_COLLECTIONS = Config.DB_COLLECTIONS;
+const service = new MongooseService();
 declare module "express-serve-static-core" {
   interface Request {
     user?: string | JwtPayload;
@@ -21,14 +23,30 @@ export function verifyToken(req: Request, res: any, next: NextFunction) {
 
     const token = authHeader.split(" ")[1];
 
-    jwt.verify(token, publicKey, { algorithms: ["RS256"] }, (err, decoded) => {
-      if (err) {
-        return res.status(401).json({ error: "Invalid or expired token" });
-      }
+    jwt.verify(
+      token,
+      publicKey,
+      { algorithms: ["RS256"] },
+      async (err, decoded) => {
+        if (err) {
+          return res.status(401).json({ error: "Invalid or expired token" });
+        }
+        const { email, _id, loginCount } = decoded as any;
+        req.user = { email, _id };
 
-      req.user = decoded;
-      next();
-    });
+        const user = await service.findOne(DB_COLLECTIONS.bussinessAccounts, {
+          _id,
+          loginCount,
+        });
+        if (!user)
+          return res
+            .status(400)
+            .json({
+              msg: "This account has been logged in from another device.",
+            });
+        next();
+      }
+    );
   } catch (error: any) {
     res.status(500).json({ error: error.message });
   }

@@ -1,0 +1,57 @@
+import "./App.css";
+import {
+  createBrowserRouter,
+  RouterProvider,
+  Navigate,
+} from "react-router-dom";
+import Login from "./pages/Login";
+import BussinessAccounts from "./pages/BussinessAccounts";
+import MainLayout from "./components/Layout";
+import ProtectedRoute from "./components/protectedRoute";
+
+const getRoutes = () => {
+  const router = createBrowserRouter([
+    {
+      path: "/login",
+      element: <Login />,
+    },
+    {
+      path: "/",
+      element: <Navigate to="/app/bussiness" replace />, // redirect to app after login
+    },
+    {
+      path: "/app",
+      element: <ProtectedRoute />, // check auth first
+      children: [
+        {
+          element: <MainLayout />,
+          children: [
+            {
+              index: true,
+              element: <Navigate to="bussiness" replace />,
+            },
+            {
+              path: "bussiness",
+              element: <BussinessAccounts />,
+            },
+          ],
+        },
+      ],
+    },
+    {
+      path: "*",
+      element: <Navigate to="/login" replace />,
+    },
+  ]);
+  return router;
+};
+
+function App() {
+  return (
+    <>
+      <RouterProvider router={getRoutes()}></RouterProvider>
+    </>
+  );
+}
+
+export default App;

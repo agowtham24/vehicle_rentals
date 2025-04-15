@@ -4,11 +4,13 @@ import {
   getRentalsByBussiness,
   updateRental,
 } from "../Controllers/rentalController";
+import { RentalValidator } from "../Validations/rental";
+import { verifyToken } from "../Utils/Jwt";
 
 const rentalRouter = Router();
 
-rentalRouter.post("/", createRental);
-rentalRouter.get("/", getRentalsByBussiness);
-rentalRouter.patch("/:id", updateRental);
+rentalRouter.post("/", verifyToken, RentalValidator.createRental, createRental);
+rentalRouter.get("/", verifyToken, getRentalsByBussiness);
+rentalRouter.patch("/:id", verifyToken, updateRental);
 
 export default rentalRouter;

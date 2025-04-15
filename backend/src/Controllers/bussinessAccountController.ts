@@ -14,6 +14,22 @@ export const createBussinessAccount = async (
 ) => {
   try {
     req.body.password = await Bcrypt.hashPassword(req.body.password);
+    req.body.role = "TENANT";
+    await service.create(DB_COLLECTIONS.bussinessAccounts, req.body);
+    return res.status(201).json({ status: true, message: "success" });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const createAdmin = async (
+  req: Request,
+  res: any,
+  next: NextFunction
+) => {
+  try {
+    req.body.password = await Bcrypt.hashPassword(req.body.password);
+    req.body.role = "ADMIN";
     await service.create(DB_COLLECTIONS.bussinessAccounts, req.body);
     return res.status(201).json({ status: true, message: "success" });
   } catch (error) {
@@ -67,7 +83,7 @@ export const loginBussiness = async (
     const isExistingAccount: any = await service.findOne(
       DB_COLLECTIONS.bussinessAccounts,
       { email },
-      { password: 1, email: 1 }
+      { password: 1, email: 1, loginCount: 1 }
     );
     if (!isExistingAccount)
       return res.status(404).json({ message: "No user found on that email" });
@@ -78,10 +94,18 @@ export const loginBussiness = async (
 
     if (!isPasswordMatched)
       return res.status(404).json({ message: "Password mismatched" });
-
+    const loginCount = isExistingAccount.loginCount + 1;
+    await service.updateOne(
+      DB_COLLECTIONS.bussinessAccounts,
+      { email },
+      {
+        loginCount,
+      }
+    );
     const token = await generateToken({
       email: isExistingAccount.email,
       _id: isExistingAccount._id,
+      loginCount,
     });
     return res.status(200).json({ message: "Login Successful", token });
   } catch (error) {
