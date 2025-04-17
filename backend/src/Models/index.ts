@@ -5,3 +5,4 @@ import "./bussinessAccount";
 import "./bussinesPricings";
 import "./rider";
 import "./rental";
+import "./batteryModel";

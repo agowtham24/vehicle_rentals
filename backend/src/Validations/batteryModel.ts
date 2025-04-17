@@ -1,25 +1,15 @@
 import { NextFunction, Request } from "express";
 import Joi from "joi";
 
-export class VehicleModelValidator {
-  static async createVehicleModel(req: Request, res: any, next: NextFunction) {
+export class BatteryModelValidator {
+  static async createBatteryModel(req: Request, res: any, next: NextFunction) {
     try {
       const schema = Joi.object({
         name: Joi.string().min(3).max(25).required(),
         manufactureBy: Joi.string().min(3).max(25).required(),
-        batterySlots: Joi.number().valid(1, 2).required(),
-        isSwapable: Joi.boolean().optional(),
         image: Joi.string().uri().required(),
-        topSpeed: Joi.string().required(),
-        batteryModelIds: Joi.array()
-          .items(
-            Joi.string()
-              .regex(/^[0-9a-fA-F]{24}$/)
-              .message("Each batteryModelId must be a valid MongoDB ObjectId")
-          )
-          .min(1)
-          .max(2)
-          .required(),
+        capacity: Joi.string().required(),
+        voltage: Joi.string().required(),
       });
       const { error } = schema.validate(req.body, { abortEarly: false });
       if (error)

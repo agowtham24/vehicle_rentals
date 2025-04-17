@@ -10,6 +10,10 @@ export class BatteryValidator {
         manufactureBy: Joi.string().required(),
         manufacturingDate: Joi.date().optional(),
         PurchaseDate: Joi.date().optional(),
+        batteryModelId: Joi.string()
+          .regex(/^[0-9a-fA-F]{24}$/)
+          .message("batteryModelId must be a valid MongoDB ObjectId")
+          .required(),
       });
       const { error } = schema.validate(req.body, { abortEarly: false });
       if (error)

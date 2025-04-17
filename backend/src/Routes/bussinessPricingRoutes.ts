@@ -3,6 +3,7 @@ import {
   createBussinessPricing,
   getByBussinessAndVehicleModel,
   updateBussinessPricing,
+  deletePlan,
 } from "../Controllers/bussinessPricingController";
 import { PricingValidator } from "../Validations/bussinessPricing";
 import { verifyToken } from "../Utils/Jwt";
@@ -21,6 +22,11 @@ bussinessPricingRouter.get(
   PricingValidator.getPricings,
   getByBussinessAndVehicleModel
 );
+bussinessPricingRouter.patch(
+  "/plan",
+  verifyToken,
+  PricingValidator.deletePlan,
+  deletePlan
+);
 bussinessPricingRouter.patch("/:id", verifyToken, updateBussinessPricing);
-
 export default bussinessPricingRouter;

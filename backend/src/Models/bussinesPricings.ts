@@ -6,6 +6,10 @@ type Plan = {
   type: string; //day|week
   amount: number; // 500
   value: number; // 7
+  batteries: number;
+  sdAmount: number;
+  freeSwaps: number;
+  swapCharge: number;
 };
 
 interface BussinessPricingSchema extends Document {
@@ -25,10 +29,21 @@ const planSchema = new Schema<Plan>(
       type: Number,
       required: true,
     },
+    sdAmount: {
+      type: Number,
+      required: true,
+    },
     value: {
       type: Number,
       required: true,
     },
+    batteries: {
+      type: Number,
+      default: 1,
+      enum: [1, 2],
+    },
+    freeSwaps: { type: Number, enum: [1, 2, 3, 4, 5] },
+    swapCharge: { type: Number },
   },
   { _id: true }
 );

@@ -13,6 +13,7 @@ import vehicleRouter from "./Routes/vehicleRoutes";
 import batteryRouter from "./Routes/batteryRoutes";
 import bussinessAccountRouter from "./Routes/bussinessAccountRoutes";
 import bussinessPricingRouter from "./Routes/bussinessPricingRoutes";
+import batteryModelRouter from "./Routes/batteryModelRoutes";
 import riderRouter from "./Routes/riderRoutes";
 import rentalRouter from "./Routes/rentalRoutes";
 import ErrorHandler from "./Middlewares/errorHandler";
@@ -63,6 +64,7 @@ app.get(`${Config.API_PREFIX}health`, async (req: Request, res: Response) => {
   res.json({ message: "hai hello" });
 });
 
+app.use(`${Config.API_PREFIX}batteryModels`, batteryModelRouter);
 app.use(`${Config.API_PREFIX}vehicleModels`, vehicleModelRouter);
 app.use(`${Config.API_PREFIX}batteries`, batteryRouter);
 app.use(`${Config.API_PREFIX}vehicles`, vehicleRouter);

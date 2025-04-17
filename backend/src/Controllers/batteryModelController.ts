@@ -5,29 +5,29 @@ const DB_COLLECTIONS = Config.DB_COLLECTIONS;
 
 const service = new MongooseService();
 
-export const createVehicleModel = async (
+export const createBatteryModel = async (
   req: Request,
   res: any,
   next: NextFunction
 ) => {
   try {
-    const data = await service.create(DB_COLLECTIONS.vehicleModels, req.body);
+    const data = await service.create(DB_COLLECTIONS.batteryModels, req.body);
     return res.status(201).json({ status: true, message: "success", data });
   } catch (error) {
     next(error);
   }
 };
 
-export async function getAllVehicleModels(
+export async function getAllBatteryModels(
   req: Request,
   res: any,
   next: NextFunction
 ) {
   try {
     const data = await service.find(
-      DB_COLLECTIONS.vehicleModels,
+      DB_COLLECTIONS.batteryModels,
       {},
-      { name: 1, batterySlots: 1, isSwapable: 1 }
+      { name: 1, capacity: 1, voltage: 1, image: 1, manufactureBy: 1 }
     );
     return res.status(200).json({ status: true, message: "success", data });
   } catch (error) {
@@ -35,14 +35,14 @@ export async function getAllVehicleModels(
   }
 }
 
-export const updateVehicleModel = async (
+export const updateBatteryModel = async (
   req: Request,
   res: any,
   next: NextFunction
 ) => {
   try {
     const data = await service.updateOne(
-      DB_COLLECTIONS.vehicleModels,
+      DB_COLLECTIONS.batteryModels,
       { _id: req.params.id },
       { ...req.body }
     );

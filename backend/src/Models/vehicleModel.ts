@@ -7,6 +7,8 @@ interface VehicleModelSchema extends Document {
   batterySlots: number;
   isSwapable: boolean;
   image: string;
+  topSpeed: string;
+  batteryModelIds: [mongoose.Schema.Types.ObjectId];
 }
 
 const vehicleModelSchema = new Schema<VehicleModelSchema>(
@@ -16,6 +18,10 @@ const vehicleModelSchema = new Schema<VehicleModelSchema>(
     batterySlots: { type: Number, default: 1 },
     isSwapable: { type: Boolean, default: false },
     image: { type: String, required: true },
+    topSpeed: { type: String, required: true },
+    batteryModelIds: [
+      { type: Schema.Types.ObjectId, ref: DB_COLLECTIONS.batteryModels },
+    ],
   },
   {
     timestamps: true,

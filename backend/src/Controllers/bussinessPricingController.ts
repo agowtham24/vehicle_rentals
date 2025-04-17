@@ -21,6 +21,11 @@ export const createBussinessPricing = async (
         .status(400)
         .json({ status: true, message: "Bussiness already exists" });
     await service.create("bussinessPricings", req.body);
+    await service.updateOne(
+      DB_COLLECTIONS.bussinessAccounts,
+      { _id: req.body.bussinessId },
+      { isPricing: true }
+    );
     return res.status(201).json({ status: true, message: "success" });
   } catch (error) {
     next(error);
@@ -66,6 +71,28 @@ export const updateBussinessPricing = async (
       { ...req.body }
     );
     return res.status(200).json({ status: true, message: "success" });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const deletePlan = async (
+  req: Request,
+  res: any,
+  next: NextFunction
+) => {
+  try {
+    const { planId, bpId } = req.query;
+    await service.updateOne(
+      DB_COLLECTIONS.bussinessPricings,
+      { _id: bpId },
+      {
+        $pull: {
+          plans: { _id: await convertToObjectId(planId as string) },
+        },
+      }
+    );
+    return res.status(200).json({ message: "success" });
   } catch (error) {
     next(error);
   }

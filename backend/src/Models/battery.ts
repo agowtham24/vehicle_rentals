@@ -9,6 +9,7 @@ interface BatterySchema extends Document {
   PurchaseDate: Date;
   status: string;
   rentalId: mongoose.Schema.Types.ObjectId;
+  batteryModelId: mongoose.Schema.Types.ObjectId;
 }
 
 const batterySchema = new Schema<BatterySchema>(
@@ -18,6 +19,10 @@ const batterySchema = new Schema<BatterySchema>(
     manufactureBy: { type: String, required: true },
     manufacturingDate: { type: Date },
     PurchaseDate: { type: Date },
+    batteryModelId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "batteryModels",
+    },
     status: {
       type: String,
       enum: ["READY_TO_ASSIGN", "ASSIGNED", "IN_SERVICE"],
