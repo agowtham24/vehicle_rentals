@@ -1,4 +1,4 @@
-import { Calendar, Home, Inbox, Search, Settings } from "lucide-react";
+import { Calendar, Handshake, Inbox, Search, Settings } from "lucide-react";
 import { ModeToggle } from "./mode-toggle";
 import {
   Sidebar,
@@ -9,15 +9,15 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarFooter
+  SidebarFooter,
 } from "@/components/ui/sidebar";
 
 // Menu items.
 const items = [
   {
-    title: "Home",
-    url: "#",
-    icon: Home,
+    title: "Manage Bussiness Accounts",
+    url: "/app/bussiness",
+    icon: Handshake,
   },
   {
     title: "Inbox",
@@ -47,7 +47,13 @@ function AppSidebar() {
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel>
-            Application 
+            <p className="text-xl pl-6 pb-6 pt-5 font-medium group flex">
+              OPTI
+              <span className="block text-green-500 group-hover:opacity-45">
+                M
+              </span>
+              OTION
+            </p>
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
@@ -66,7 +72,7 @@ function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter>
-      <ModeToggle />
+        <ModeToggle />
       </SidebarFooter>
     </Sidebar>
   );

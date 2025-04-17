@@ -11,19 +11,17 @@ export class BussinessAccountValidator {
       const schema = Joi.object({
         name: Joi.string().min(3).max(25).required(),
         email: Joi.string().email().required(),
-        role: Joi.string().valid("ADMIN", "TENANT").required(),
         mobile: Joi.string()
           .pattern(/^[6-9]\d{9}$/)
           .message("Mobile must be a valid 10-digit number")
           .required(),
         password: Joi.string().min(6).required(),
-        location: Joi.object({
-          address: Joi.string().required(),
-          pincode: Joi.string().required(),
-          state: Joi.string().required(),
-          lat: Joi.number().required(),
-          lng: Joi.number().required(),
-        }).required(),
+      
+        address: Joi.string().required(),
+        pincode: Joi.string().required(),
+        state: Joi.string().required(),
+      
+        image: Joi.string().uri().required(),
       });
       const { error } = schema.validate(req.body, { abortEarly: false });
       if (error)

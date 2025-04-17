@@ -13,13 +13,16 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-// import { api, config } from "@/axios-config";
+import { api, config } from "@/lib/axios-config";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import vehicle1 from "../assets/vehicle1.png";
+import withErrorHandler from "@/lib/ErrorHandler";
+import { useNavigate } from "react-router-dom";
+
 const formSchema = z.object({
   email: z.string().email({
     message: "Please enter a valid email address.",
@@ -30,6 +33,8 @@ const formSchema = z.object({
 });
 
 function Login() {
+  const navigate = useNavigate();
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -37,28 +42,30 @@ function Login() {
       password: "",
     },
   });
-  async function onSubmit(values: z.infer<typeof formSchema>) {
-    try {
-      console.log(values);
-    } catch (error: unknown) {
-      if (error instanceof Error) {
-        console.error("Submission error:", error.message);
-      } else {
-        console.error("Unknown error:", error);
-      }
+
+  const onSubmit = withErrorHandler(
+    async (values: z.infer<typeof formSchema>) => {
+      const res = await api.post(
+        `${config.api_url}bussinessAccounts/login`,
+        values
+      );
+      sessionStorage.setItem("token", res.data.token);
+      sessionStorage.setItem("userId", res.data.data.id);
+      navigate("/app/bussiness");
     }
-  }
+  );
+
   return (
     <section className="container h-full">
       <div>
         <Link to="/">
-          <h3 className="text-2xl pl-6 pb-4 pt-5 font-medium group flex">
+          <p className="text-xl pl-6 pb-4 pt-5 font-medium group flex">
             OPTI
             <span className="block text-green-500 group-hover:opacity-45">
               M
             </span>
             OTION
-          </h3>
+          </p>
         </Link>
         <div className="flex mt-7 justify-around align-middle">
           <Card className="w-[400px] drop-shadow-lg">

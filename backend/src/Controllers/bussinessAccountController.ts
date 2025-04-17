@@ -15,6 +15,11 @@ export const createBussinessAccount = async (
   try {
     req.body.password = await Bcrypt.hashPassword(req.body.password);
     req.body.role = "TENANT";
+    req.body.location = {
+      address: req.body.address,
+      pincode: req.body.pincode,
+      state: req.body.state,
+    };
     await service.create(DB_COLLECTIONS.bussinessAccounts, req.body);
     return res.status(201).json({ status: true, message: "success" });
   } catch (error) {
@@ -46,7 +51,7 @@ export async function getAllBussinessAccounts(
     const data = await service.find(
       DB_COLLECTIONS.bussinessAccounts,
       {},
-      { password: 0 }
+      { password: 0, role: 0, loginCount: 0 }
     );
     return res.status(200).json({ status: true, message: "success", data });
   } catch (error) {
@@ -83,7 +88,7 @@ export const loginBussiness = async (
     const isExistingAccount: any = await service.findOne(
       DB_COLLECTIONS.bussinessAccounts,
       { email },
-      { password: 1, email: 1, loginCount: 1 }
+      { password: 1, email: 1, loginCount: 1, role: 1 }
     );
     if (!isExistingAccount)
       return res.status(404).json({ message: "No user found on that email" });
@@ -107,7 +112,11 @@ export const loginBussiness = async (
       _id: isExistingAccount._id,
       loginCount,
     });
-    return res.status(200).json({ message: "Login Successful", token });
+    return res.status(200).json({
+      message: "Login Successful",
+      token,
+      data: { id: isExistingAccount._id, role: isExistingAccount.role },
+    });
   } catch (error) {
     next(error);
   }
