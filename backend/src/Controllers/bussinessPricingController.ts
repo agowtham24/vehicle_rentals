@@ -17,10 +17,11 @@ export const createBussinessPricing = async (
       vehicleModelId,
     });
     if (isExisting)
-      return res
-        .status(400)
-        .json({ status: true, message: "Bussiness already exists" });
-    await service.create("bussinessPricings", req.body);
+      return res.status(400).json({
+        status: true,
+        message: "Pricings already exists Please update.",
+      });
+    await service.create(DB_COLLECTIONS.bussinessPricings, req.body);
     await service.updateOne(
       DB_COLLECTIONS.bussinessAccounts,
       { _id: req.body.bussinessId },
@@ -38,18 +39,36 @@ export async function getByBussinessAndVehicleModel(
   next: NextFunction
 ) {
   try {
-    const { bussinessId, vehicleModelId } = req.query;
-
+    const { bussinessId } = req.query;
     const data = await service.aggregate(DB_COLLECTIONS.bussinessPricings, [
       {
         $match: {
           bussinessId: await convertToObjectId(bussinessId as string),
-          vehicleModelId: await convertToObjectId(vehicleModelId as string),
         },
       },
       {
+        $lookup: {
+          from: DB_COLLECTIONS.vehicleModels,
+          localField: "vehicleModelId",
+          foreignField: "_id",
+          as: "vehicleModel",
+          pipeline: [
+            {
+              $project: {
+                _id: 0,
+                image: 1,
+                name: 1,
+                topSpeed: 1,
+              },
+            },
+          ],
+        },
+      },
+      { $unwind: "$vehicleModel" },
+      {
         $project: {
           plans: 1,
+          vehicleModel: 1,
         },
       },
     ]);
@@ -91,6 +110,20 @@ export const deletePlan = async (
           plans: { _id: await convertToObjectId(planId as string) },
         },
       }
+    );
+    return res.status(200).json({ message: "success" });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const addPlan = async (req: Request, res: any, next: NextFunction) => {
+  try {
+    const { bpId } = req.query;
+    await service.updateOne(
+      DB_COLLECTIONS.bussinessPricings,
+      { _id: bpId },
+      { $push: { plans: req.body } }
     );
     return res.status(200).json({ message: "success" });
   } catch (error) {

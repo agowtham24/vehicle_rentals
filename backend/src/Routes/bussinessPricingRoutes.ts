@@ -4,12 +4,19 @@ import {
   getByBussinessAndVehicleModel,
   updateBussinessPricing,
   deletePlan,
+  addPlan,
 } from "../Controllers/bussinessPricingController";
 import { PricingValidator } from "../Validations/bussinessPricing";
 import { verifyToken } from "../Utils/Jwt";
 
 const bussinessPricingRouter = Router();
 
+bussinessPricingRouter.post(
+  "/plan",
+  verifyToken,
+  PricingValidator.addPlan,
+  addPlan
+);
 bussinessPricingRouter.post(
   "/",
   verifyToken,
@@ -22,7 +29,7 @@ bussinessPricingRouter.get(
   PricingValidator.getPricings,
   getByBussinessAndVehicleModel
 );
-bussinessPricingRouter.patch(
+bussinessPricingRouter.delete(
   "/plan",
   verifyToken,
   PricingValidator.deletePlan,

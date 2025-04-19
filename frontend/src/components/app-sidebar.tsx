@@ -1,4 +1,4 @@
-import { Calendar, Handshake, Inbox, Search, Settings } from "lucide-react";
+import { Handshake, Bike } from "lucide-react";
 import { ModeToggle } from "./mode-toggle";
 import {
   Sidebar,
@@ -20,24 +20,9 @@ const items = [
     icon: Handshake,
   },
   {
-    title: "Inbox",
-    url: "#",
-    icon: Inbox,
-  },
-  {
-    title: "Calendar",
-    url: "#",
-    icon: Calendar,
-  },
-  {
-    title: "Search",
-    url: "#",
-    icon: Search,
-  },
-  {
-    title: "Settings",
-    url: "#",
-    icon: Settings,
+    title: "vehicles",
+    url: "/app/vehicles",
+    icon: Bike,
   },
 ];
 
@@ -49,7 +34,7 @@ function AppSidebar() {
           <SidebarGroupLabel>
             <p className="text-xl pl-6 pb-6 pt-5 font-medium group flex">
               OPTI
-              <span className="block text-green-500 group-hover:opacity-45">
+              <span className="block text-primary group-hover:opacity-45">
                 M
               </span>
               OTION

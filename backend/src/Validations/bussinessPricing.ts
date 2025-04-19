@@ -39,13 +39,13 @@ export class PricingValidator {
   static async getPricings(req: Request, res: any, next: NextFunction) {
     try {
       const schema = Joi.object({
-        vehicleModelId: Joi.string()
-          .regex(/^[0-9a-fA-F]{24}$/)
-          .message("vehicleModelId must be a valid MongoDB ObjectId")
-          .required(),
+        // vehicleModelId: Joi.string()
+        //   .regex(/^[0-9a-fA-F]{24}$/)
+        //   .message("vehicleModelId must be a valid MongoDB ObjectId")
+        //   .required(),
         bussinessId: Joi.string()
           .regex(/^[0-9a-fA-F]{24}$/)
-          .message("vehicleModelId must be a valid MongoDB ObjectId")
+          .message("BussinessId must be a valid MongoDB ObjectId")
           .required(),
       });
       const { error } = schema.validate(req.query, { abortEarly: false });
@@ -76,6 +76,39 @@ export class PricingValidator {
         return res
           .status(400)
           .json(error.details.map((detail) => detail.message));
+      next();
+    } catch (error) {
+      next(error);
+    }
+  }
+  
+  static async addPlan(req: Request, res: any, next: NextFunction) {
+    try {
+      const querySchema = Joi.object({
+        bpId: Joi.string()
+          .regex(/^[0-9a-fA-F]{24}$/)
+          .message("Business Pricing ID must be a valid MongoDB ObjectId")
+          .required(),
+      });
+
+      const queryValidation = querySchema.validate(req.query, {
+        abortEarly: false,
+      });
+      if (queryValidation.error) {
+        return res
+          .status(400)
+          .json(queryValidation.error.details.map((detail) => detail.message));
+      }
+
+      const bodyValidation = planValidator.validate(req.body, {
+        abortEarly: false,
+      });
+      if (bodyValidation.error) {
+        return res
+          .status(400)
+          .json(bodyValidation.error.details.map((detail) => detail.message));
+      }
+
       next();
     } catch (error) {
       next(error);

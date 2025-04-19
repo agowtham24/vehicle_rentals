@@ -3,6 +3,7 @@ import Config from "../config";
 const DB_COLLECTIONS = Config.DB_COLLECTIONS;
 interface RiderSchema extends Document {
   mobile: string;
+  name: string;
   status: string;
   isActiveRide: boolean;
   isSdPaid: boolean;
@@ -15,6 +16,7 @@ interface RiderSchema extends Document {
 
 const riderSchema = new Schema<RiderSchema>(
   {
+    name: { type: String, required: true },
     mobile: { type: String, required: true, unique: true },
     status: {
       type: String,
@@ -22,7 +24,7 @@ const riderSchema = new Schema<RiderSchema>(
       default: "ACTIVE",
     },
     isActiveRide: { type: Boolean, default: false },
-    isSdPaid: { type: Boolean, default: false },
+    isSdPaid: { type: Boolean},
     isRentPaid: { type: Boolean },
     sdAmount: { type: Number },
     vehicleId: {

@@ -61,7 +61,7 @@ function Login() {
         <Link to="/">
           <p className="text-xl pl-6 pb-4 pt-5 font-medium group flex">
             OPTI
-            <span className="block text-green-500 group-hover:opacity-45">
+            <span className="block text-primary group-hover:opacity-45">
               M
             </span>
             OTION

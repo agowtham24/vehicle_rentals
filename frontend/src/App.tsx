@@ -8,7 +8,9 @@ import Login from "./pages/Login";
 import BussinessAccounts from "./pages/BussinessAccounts";
 import MainLayout from "./components/Layout";
 import ProtectedRoute from "./components/protectedRoute";
-
+import BussinessPricings from "./pages/BussinessPricings";
+import PlanForm from "./pages/PlanForm";
+import Vehicles from "./pages/Vehicles";
 const getRoutes = () => {
   const router = createBrowserRouter([
     {
@@ -33,6 +35,18 @@ const getRoutes = () => {
             {
               path: "bussiness",
               element: <BussinessAccounts />,
+            },
+            {
+              path: "pricings",
+              element: <BussinessPricings />,
+            },
+            {
+              path: "planForm",
+              element: <PlanForm />,
+            },
+            {
+              path: "vehicles",
+              element: <Vehicles />,
             },
           ],
         },

@@ -7,14 +7,14 @@ const Config = {
   JWT_PRIVATE_KEY_PATH: "./keys/privateKey.pem",
   JWT_PUBLIC_KEY_PATH: "./keys/publicKey.pem",
   DB_COLLECTIONS: {
-    batteryModels: "batteryModels",
+    batteryModels: "batterymodels",
     batteries: "batteries",
-    bussinessPricings: "bussinessPricings",
-    bussinessAccounts: "bussinessAccounts",
+    bussinessPricings: "bussinesspricings",
+    bussinessAccounts: "bussinessaccounts",
     rentals: "rentals",
     riders: "riders",
     vehicles: "vehicles",
-    vehicleModels: "vehicleModels",
+    vehicleModels: "vehiclemodels",
   },
 };
 

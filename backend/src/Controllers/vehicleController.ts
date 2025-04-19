@@ -31,10 +31,19 @@ export async function getVehiclesByStatus(
       },
       {
         $lookup: {
-          from: "riders",
+          from: DB_COLLECTIONS.riders,
           localField: "riderId",
           foreignField: "_id",
           as: "rider",
+          pipeline: [
+            {
+              $project: {
+                _id: 0,
+                name: 1,
+                mobile: 1,
+              },
+            },
+          ],
         },
       },
       {
@@ -43,28 +52,21 @@ export async function getVehiclesByStatus(
           preserveNullAndEmptyArrays: true,
         },
       },
-
       {
         $lookup: {
-          from: "rentals",
-          localField: "rentalId",
-          foreignField: "_id",
-          as: "rental",
-        },
-      },
-      {
-        $unwind: {
-          path: "$rental",
-          preserveNullAndEmptyArrays: true,
-        },
-      },
-
-      {
-        $lookup: {
-          from: "vehiclemodels",
+          from: DB_COLLECTIONS.vehicleModels,
           localField: "vehicleModelId",
           foreignField: "_id",
           as: "vehicleModel",
+          pipeline: [
+            {
+              $project: {
+                _id: 0,
+                name: 1,
+                image: 1,
+              },
+            },
+          ],
         },
       },
       {
@@ -76,27 +78,78 @@ export async function getVehiclesByStatus(
       // Lookup batteries
       {
         $lookup: {
-          from: "batteries",
+          from: DB_COLLECTIONS.batteries,
           localField: "assosiatedBatteries",
           foreignField: "_id",
           as: "batteries",
+          pipeline: [
+            {
+              $project: {
+                _id: 0,
+                name: 1,
+              },
+            },
+          ],
         },
       },
-
+      {
+        $lookup: {
+          from: DB_COLLECTIONS.rentals,
+          localField: "rentalId",
+          foreignField: "_id",
+          as: "rental",
+          pipeline: [
+            {
+              $match: {
+                status: 0,
+              },
+            },
+            {
+              $lookup: {
+                from: DB_COLLECTIONS.bussinessAccounts,
+                localField: "bussinessId",
+                foreignField: "_id",
+                as: "bussiness",
+                pipeline: [
+                  {
+                    $project: {
+                      name: 1,
+                      _id: 0,
+                      image: 1,
+                    },
+                  },
+                ],
+              },
+            },
+            {
+              $unwind: {
+                path: "$bussiness",
+                preserveNullAndEmptyArrays: true,
+              },
+            },
+            {
+              $project: {
+                _id: 0,
+                bussiness: 1,
+              },
+            },
+          ],
+        },
+      },
+      {
+        $unwind: {
+          path: "$rental",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
       {
         $project: {
           assetId: 1,
-          vehicleNumber: 1,
-          status: 1,
-          registrationNo: 1,
-          registeryName: 1,
-          registrationDate: 1,
           rider: 1,
           rental: 1,
           vehicleModel: 1,
           batteries: 1,
-          createdAt: 1,
-          updatedAt: 1,
+          status: 1,
         },
       },
     ]);

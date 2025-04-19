@@ -50,7 +50,7 @@ export async function getAllBussinessAccounts(
   try {
     const data = await service.find(
       DB_COLLECTIONS.bussinessAccounts,
-      {},
+      { role: "TENANT" },
       { password: 0, role: 0, loginCount: 0 }
     );
     return res.status(200).json({ status: true, message: "success", data });

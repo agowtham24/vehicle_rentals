@@ -19,7 +19,7 @@ interface VehicleSchema extends Document {
 const vehicleSchema = new Schema<VehicleSchema>(
   {
     assetId: { type: String, required: true, unique: true },
-    vehicleNumber: { type: String, required: true },
+    vehicleNumber: { type: String, required: true, unique: true },
     assosiatedBatteries: [
       { type: Schema.Types.ObjectId, ref: DB_COLLECTIONS.batteries },
     ],
@@ -37,7 +37,7 @@ const vehicleSchema = new Schema<VehicleSchema>(
     registrationNo: { type: String, required: true },
     registeryName: { type: String, required: true },
     registrationDate: { type: Date, required: true },
-    device_imei: { type: String, required: true },
+    device_imei: { type: String, required: true, unique: true },
   },
   {
     timestamps: true,

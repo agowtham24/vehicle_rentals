@@ -6,7 +6,7 @@ export class VehicleValidator {
     try {
       const schema = Joi.object({
         assetId: Joi.string().min(3).max(25).required(),
-        vehicleNumber: Joi.string().min(3).max(10).required(),
+        vehicleNumber: Joi.string().min(3).max(13).required(),
         vehicleModelId: Joi.string()
           .regex(/^[0-9a-fA-F]{24}$/)
           .message("vehicleModelId must be a valid MongoDB ObjectId")

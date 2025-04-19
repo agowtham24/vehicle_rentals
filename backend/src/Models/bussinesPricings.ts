@@ -42,7 +42,7 @@ const planSchema = new Schema<Plan>(
       default: 1,
       enum: [1, 2],
     },
-    freeSwaps: { type: Number, enum: [1, 2, 3, 4, 5] },
+    freeSwaps: { type: Number, enum: [0,1, 2, 3, 4, 5] },
     swapCharge: { type: Number },
   },
   { _id: true }

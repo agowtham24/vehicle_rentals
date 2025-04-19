@@ -11,7 +11,7 @@ const batteryRouter = Router();
 
 batteryRouter.post(
   "/",
-  verifyToken,
+  // verifyToken,
   BatteryValidator.createBattery,
   createBattery
 );
