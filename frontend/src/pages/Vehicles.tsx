@@ -21,14 +21,18 @@ import withErrorHandler from "@/lib/ErrorHandler";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { AssignVehicleToBussiness } from "@/lib/forms";
+import { toast } from "sonner";
+
 type Vehicle = {
   _id: string;
   assetId: string;
   rider: {
+    _id: string;
     name: string;
     mobile: string;
   };
   rental: {
+    _id: string;
     bussiness: {
       name: string;
       image: string;
@@ -38,37 +42,46 @@ type Vehicle = {
     name: string;
     image: string;
   };
-  batteries: [{ name: string }];
+  batteries: [{ _id: string; name: string }];
   status: string;
 };
-type Tenant = {
-  name: string;
-  _id: string;
-};
+
 function Vehicles() {
   const [vehicles, setVehicles] = useState([] as Vehicle[]);
-  const [tenantList, setTenantList] = useState([] as Tenant[]);
   const [status, setStatus] = useState("READY_TO_ASSIGN");
   const getVehicles = withErrorHandler(async (status: string) => {
     const res = await api.get(`${config.api_url}vehicles?status=${status}`);
     setVehicles(res.data.data);
   });
-  const getTenants = withErrorHandler(async () => {
-    const res = await api.get(`${config.api_url}bussinessAccounts`);
-    console.log(res.data.data, "tenants");
-    setTenantList(res.data.data);
-  });
+
   const manageStatus = withErrorHandler(async (status: string) => {
     setStatus(status);
   });
 
-  useEffect(() => {
-    getVehicles(status);
-  }, [getVehicles, status]);
+  const deAssignVehicle = withErrorHandler(
+    async (
+      rentalId: string,
+      vehicleId: string,
+      batteries: [{ _id: string; name: string }]
+    ) => {
+      const data = {
+        rentalId,
+        vehicleId,
+        batteries: batteries.map((item) => item._id),
+      };
+
+      await api.post(`${config.api_url}rentals/deAssign`, data);
+      getVehicles(status);
+      toast.success("Success", {
+        description: "Vehicle De-assigned success",
+      });
+    }
+  );
 
   useEffect(() => {
-    getTenants();
-  }, []);
+    getVehicles(status);
+  }, [status]);
+
   return (
     <>
       <p className="text-xl">Vehicles</p>
@@ -160,7 +173,17 @@ function Vehicles() {
                         </p>
                       </TableCell>
                       <TableCell>
-                        <Button variant="secondary" type="button">
+                        <Button
+                          variant="secondary"
+                          type="button"
+                          onClick={() =>
+                            deAssignVehicle(
+                              vehicle.rental._id,
+                              vehicle._id,
+                              vehicle.batteries
+                            )
+                          }
+                        >
                           De-Assign
                         </Button>
                       </TableCell>

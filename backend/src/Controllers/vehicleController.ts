@@ -38,7 +38,7 @@ export async function getVehiclesByStatus(
           pipeline: [
             {
               $project: {
-                _id: 0,
+                _id: 1,
                 name: 1,
                 mobile: 1,
               },
@@ -85,7 +85,7 @@ export async function getVehiclesByStatus(
           pipeline: [
             {
               $project: {
-                _id: 0,
+                _id: 1,
                 name: 1,
               },
             },
@@ -129,7 +129,7 @@ export async function getVehiclesByStatus(
             },
             {
               $project: {
-                _id: 0,
+                _id: 1,
                 bussiness: 1,
               },
             },
@@ -171,6 +171,24 @@ export const updateVehicles = async (
       { ...req.body }
     );
     return res.status(200).json({ status: true, message: "success" });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getVehiclesByModel = async (
+  req: Request,
+  res: any,
+  next: NextFunction
+) => {
+  try {
+    const { id } = req.query;
+    const data = await service.find(
+      DB_COLLECTIONS.vehicles,
+      { vehicleModelId: id, status: "READY_TO_ASSIGN" },
+      { assetId: 1, _id: 1 }
+    );
+    return res.status(200).json({ message: "success", data });
   } catch (error) {
     next(error);
   }

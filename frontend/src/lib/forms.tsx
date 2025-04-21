@@ -6,6 +6,15 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import * as React from "react";
+import { DropdownMenuCheckboxItemProps } from "@radix-ui/react-dropdown-menu";
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+type Checked = DropdownMenuCheckboxItemProps["checked"];
 import { Input } from "@/components/ui/input";
 import { api, config } from "@/lib/axios-config";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -23,6 +32,8 @@ import {
 import { Plus, Minus } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { BussinessAccount } from "@/pages/BussinessAccounts";
+
 type VehicleModel = {
   _id: string;
   name: string;
@@ -48,7 +59,8 @@ const assignVehicleSchema = z.object({
   bussinessId: z.string(),
   vehicleModelId: z.string(),
   vehicleId: z.string(),
-  plan: planItemSchema,
+  plan: z.string(),
+  assosiatedBatteries: z.array(z.string()),
 });
 
 type PlanFormProps = {
@@ -535,47 +547,75 @@ export const SinglePlanForm = (props: SinglePlanFormProps) => {
   );
 };
 
-const businesses = [
-  { _id: "biz1", name: "Business One" },
-  { _id: "biz2", name: "Business Two" },
-];
-
-const vehicles = [
-  { _id: "veh1", plateNumber: "ABC-123" },
-  { _id: "veh2", plateNumber: "XYZ-789" },
-];
-
-const vehicleModels = [
-  { _id: "model1", name: "Model A" },
-  { _id: "model2", name: "Model B" },
-];
+type Plan = {
+  _id: string;
+  type: string;
+  amount: number;
+  value: number;
+  batteries: number;
+  sdAmount: number;
+  freeSwaps: number;
+  swapCharge: number;
+};
 export const AssignVehicleToBussiness = () => {
+  const [tenants, setTenants] = useState([] as BussinessAccount[]);
+  const [vehicleModels, setVehicleModels] = useState([] as any[]);
+  const [vehicles, setVehicles] = useState([] as any[]);
+  const [plans, setPlans] = useState([] as any[]);
+  const [batteries, setBatteries] = useState(
+    [] as { assetId: string; _id: string }[]
+  );
   const form = useForm<z.infer<typeof assignVehicleSchema>>({
     resolver: zodResolver(assignVehicleSchema),
     defaultValues: {
       bussinessId: "",
       vehicleId: "",
       vehicleModelId: "",
-      plan: {
-        type: "day",
-        amount: 0,
-        sdAmount: 0,
-        value: 1,
-        batteries: 1,
-        freeSwaps: 0,
-        swapCharge: 0,
-      },
+      plan: "",
+      assosiatedBatteries: [],
     },
   });
+
   const onSubmit = withErrorHandler(
     async (values: z.infer<typeof assignVehicleSchema>) => {
-      await api.post(`${config.api_url}rentals`, values);
+      const plan = plans.find((item) => item._id === values.plan);
+      const data = {
+        ...values,
+        plan,
+      };
+      console.log(data, "data");
+      await api.post(`${config.api_url}rentals`, data);
       toast.success("Success", {
         description: "vehicle assigned to bussiness successfully.",
       });
       form.reset();
     }
   );
+
+  const getTenants = withErrorHandler(async () => {
+    const res = await api.get(`${config.api_url}bussinessAccounts`);
+    setTenants(res.data.data);
+  });
+
+  const getVehicleModelsByTenant = withErrorHandler(async (id: string) => {
+    const res = await api.get(
+      `${config.api_url}bussinessPricings/vehicleModels?id=${id}`
+    );
+    setVehicleModels(res.data.data);
+  });
+
+  const getVehiclesByModel = withErrorHandler(async (id: string) => {
+    const model = vehicleModels.find((item) => item.vehicleModel._id === id);
+    if (model) setPlans(model.plans);
+    if (model) setBatteries(model.vehicleModel.batteries);
+    const res = await api.get(`${config.api_url}vehicles/modelId?id=${id}`);
+    setVehicles(res.data.data);
+  });
+
+  useEffect(() => {
+    getTenants();
+  }, []);
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
@@ -588,18 +628,58 @@ export const AssignVehicleToBussiness = () => {
               <FormLabel>Business</FormLabel>
               <FormControl>
                 <Select
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
+                  value={field.value}
+                  onValueChange={(value) => {
+                    field.onChange(value);
+                    getVehicleModelsByTenant(value);
+                  }}
                 >
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder="Select business" />
                   </SelectTrigger>
                   <SelectContent>
-                    {businesses.map((b) => (
-                      <SelectItem key={b._id} value={b._id}>
-                        {b.name}
-                      </SelectItem>
-                    ))}
+                    {tenants.length > 0 &&
+                      tenants.map((tenant: BussinessAccount) => (
+                        <SelectItem key={tenant._id} value={tenant._id}>
+                          {tenant.name}
+                        </SelectItem>
+                      ))}
+                  </SelectContent>
+                </Select>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        {/* Vehicle Model */}
+        <FormField
+          control={form.control}
+          name="vehicleModelId"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Vehicle Model</FormLabel>
+              <FormControl>
+                <Select
+                  value={field.value}
+                  onValueChange={(value) => {
+                    field.onChange(value);
+                    getVehiclesByModel(value);
+                  }}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select model" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {vehicleModels.length > 0 &&
+                      vehicleModels.map((model) => (
+                        <SelectItem
+                          key={model._id}
+                          value={model.vehicleModel._id}
+                        >
+                          {model.vehicleModel.name}
+                        </SelectItem>
+                      ))}
                   </SelectContent>
                 </Select>
               </FormControl>
@@ -624,11 +704,37 @@ export const AssignVehicleToBussiness = () => {
                     <SelectValue placeholder="Select vehicle" />
                   </SelectTrigger>
                   <SelectContent>
-                    {vehicles.map((v) => (
-                      <SelectItem key={v._id} value={v._id}>
-                        {v.plateNumber}
-                      </SelectItem>
-                    ))}
+                    {vehicles.length > 0 &&
+                      vehicles.map((v) => (
+                        <SelectItem key={v._id} value={v._id}>
+                          {v.assetId}
+                        </SelectItem>
+                      ))}
+                  </SelectContent>
+                </Select>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="plan"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Plan</FormLabel>
+              <FormControl>
+                <Select onValueChange={field.onChange} value={field.value}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select vehicle" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {plans.length > 0 &&
+                      plans.map((v: Plan) => (
+                        <SelectItem key={v._id} value={v._id}>
+                          {`${v.value} ${v.type}s`}
+                        </SelectItem>
+                      ))}
                   </SelectContent>
                 </Select>
               </FormControl>
@@ -637,30 +743,42 @@ export const AssignVehicleToBussiness = () => {
           )}
         />
 
-        {/* Vehicle Model */}
         <FormField
           control={form.control}
-          name="vehicleModelId"
+          name="assosiatedBatteries"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Vehicle Model</FormLabel>
-              <FormControl>
-                <Select
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                >
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Select model" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {vehicleModels.map((model) => (
-                      <SelectItem key={model._id} value={model._id}>
-                        {model.name}
-                      </SelectItem>
+              <FormLabel>Associated Batteries</FormLabel>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline">
+                    {field.value.length > 0
+                      ? `${field.value.length} selected`
+                      : "Select batteries"}
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-56">
+                  {/* Loop through the batteries array */}
+                  {batteries.length > 0 &&
+                    batteries.map((battery) => (
+                      <DropdownMenuCheckboxItem
+                        key={battery._id}
+                        checked={field.value.includes(battery._id)}
+                        onCheckedChange={(checked) => {
+                          if (checked) {
+                            field.onChange([...field.value, battery._id]); // Add battery ID to array
+                          } else {
+                            field.onChange(
+                              field.value.filter((id) => id !== battery._id) // Remove battery ID from array
+                            );
+                          }
+                        }}
+                      >
+                        {battery.assetId} {/* Display battery's assetId */}
+                      </DropdownMenuCheckboxItem>
                     ))}
-                  </SelectContent>
-                </Select>
-              </FormControl>
+                </DropdownMenuContent>
+              </DropdownMenu>
               <FormMessage />
             </FormItem>
           )}

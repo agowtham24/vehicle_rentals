@@ -18,5 +18,4 @@ bussinessAccountRouter.post(
 bussinessAccountRouter.get("/", verifyToken, getAllBussinessAccounts);
 bussinessAccountRouter.patch("/:id", verifyToken, updateBussinessAccount);
 bussinessAccountRouter.post("/login", loginBussiness);
-
 export default bussinessAccountRouter;

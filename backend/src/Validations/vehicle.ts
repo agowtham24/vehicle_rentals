@@ -46,4 +46,23 @@ export class VehicleValidator {
       next(error);
     }
   }
+
+  static async getVehiclesByModel(req: Request, res: any, next: NextFunction) {
+    try {
+      const schema = Joi.object({
+        id: Joi.string()
+          .regex(/^[0-9a-fA-F]{24}$/)
+          .message("vehicleModel ID must be a valid MongoDB ObjectId")
+          .required(),
+      });
+      const { error } = schema.validate(req.query, { abortEarly: false });
+      if (error)
+        return res
+          .status(400)
+          .json(error.details.map((detail) => detail.message));
+      next();
+    } catch (error) {
+      next(error);
+    }
+  }
 }

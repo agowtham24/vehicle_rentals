@@ -5,6 +5,7 @@ import {
   updateBussinessPricing,
   deletePlan,
   addPlan,
+  getVehicleModelsByTenant,
 } from "../Controllers/bussinessPricingController";
 import { PricingValidator } from "../Validations/bussinessPricing";
 import { verifyToken } from "../Utils/Jwt";
@@ -22,6 +23,12 @@ bussinessPricingRouter.post(
   verifyToken,
   PricingValidator.createPricing,
   createBussinessPricing
+);
+bussinessPricingRouter.get(
+  "/vehicleModels",
+  verifyToken,
+  PricingValidator.getVehicleModelsByTenant,
+  getVehicleModelsByTenant
 );
 bussinessPricingRouter.get(
   "/",

@@ -130,3 +130,73 @@ export const addPlan = async (req: Request, res: any, next: NextFunction) => {
     next(error);
   }
 };
+
+export const getVehicleModelsByTenant = async (
+  req: Request,
+  res: any,
+  next: NextFunction
+) => {
+  try {
+    const { id } = req.query;
+    const data = await service.aggregate(DB_COLLECTIONS.bussinessPricings, [
+      {
+        $match: {
+          bussinessId: await convertToObjectId(id as string),
+        },
+      },
+      {
+        $lookup: {
+          from: DB_COLLECTIONS.vehicleModels,
+          localField: "vehicleModelId",
+          foreignField: "_id",
+          as: "vehicleModel",
+          pipeline: [
+            {
+              $lookup: {
+                from: DB_COLLECTIONS.batteries,
+                localField: "batteryModelIds",
+                foreignField: "batteryModelId",
+                as: "batteries",
+                pipeline: [
+                  {
+                    $match: {
+                      status: "READY_TO_ASSIGN",
+                    },
+                  },
+                  {
+                    $project: {
+                      assetId: 1,
+                      _id: 1,
+                    },
+                  },
+                ],
+              },
+            },
+            {
+              $project: {
+                name: 1,
+                _id: 1,
+                batteries: 1, // Keep batteries as array
+              },
+            },
+          ],
+        },
+      },
+      {
+        $unwind: {
+          path: "$vehicleModel",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $project: {
+          plans: 1,
+          vehicleModel: 1,
+        },
+      },
+    ]);
+    return res.status(200).json({ message: "success", data });
+  } catch (error) {
+    next(error);
+  }
+};

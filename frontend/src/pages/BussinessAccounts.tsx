@@ -56,7 +56,7 @@ const formSchema = z.object({
 
   image: z.string().url({ message: "Image must be a valid URL." }).optional(),
 });
-interface BussinessAccount {
+export interface BussinessAccount {
   _id: string;
   name: string;
   email: string;

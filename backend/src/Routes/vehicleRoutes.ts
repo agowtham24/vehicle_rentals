@@ -3,6 +3,7 @@ import {
   createVehicle,
   getVehiclesByStatus,
   updateVehicles,
+  getVehiclesByModel,
 } from "../Controllers/vehicleController";
 import { VehicleValidator } from "../Validations/vehicle";
 import { verifyToken } from "../Utils/Jwt";
@@ -14,6 +15,12 @@ vehicleRouter.post(
   verifyToken,
   VehicleValidator.createVehicle,
   createVehicle
+);
+vehicleRouter.get(
+  "/modelId",
+  verifyToken,
+  VehicleValidator.getVehiclesByModel,
+  getVehiclesByModel
 );
 vehicleRouter.get(
   "/",

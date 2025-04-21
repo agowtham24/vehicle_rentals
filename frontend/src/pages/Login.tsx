@@ -51,7 +51,13 @@ function Login() {
       );
       sessionStorage.setItem("token", res.data.token);
       sessionStorage.setItem("userId", res.data.data.id);
-      navigate("/app/bussiness");
+      sessionStorage.setItem("role", res.data.data.role);
+      if(res.data.data.role==='ADMIN'){
+
+        navigate("/app/bussiness");
+      }else{
+        navigate("/app/rentals")
+      }
     }
   );
 
@@ -61,9 +67,7 @@ function Login() {
         <Link to="/">
           <p className="text-xl pl-6 pb-4 pt-5 font-medium group flex">
             OPTI
-            <span className="block text-primary group-hover:opacity-45">
-              M
-            </span>
+            <span className="block text-primary group-hover:opacity-45">M</span>
             OTION
           </p>
         </Link>

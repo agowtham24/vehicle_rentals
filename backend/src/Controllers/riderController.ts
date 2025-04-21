@@ -25,10 +25,11 @@ export async function getRiderByMobile(
 ) {
   try {
     const { mobile } = req.query;
+    
     const regex = new RegExp(mobile as string, "i");
     const data = await service.find(
       DB_COLLECTIONS.riders,
-      { mobile: { $regex: regex } },
+      { mobile: { $regex: regex }, status: "ACTIVE" },
       { mobile: 1, status: 1 }
     );
     return res.status(200).json({ status: true, message: "success", data });

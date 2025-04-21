@@ -1,4 +1,4 @@
-import { Handshake, Bike } from "lucide-react";
+import { Handshake, Bike, LogOut, ListCheck } from "lucide-react";
 import { ModeToggle } from "./mode-toggle";
 import {
   Sidebar,
@@ -11,22 +11,41 @@ import {
   SidebarMenuItem,
   SidebarFooter,
 } from "@/components/ui/sidebar";
-
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { Button } from "./ui/button";
+import { useNavigate } from "react-router-dom";
 // Menu items.
-const items = [
-  {
-    title: "Manage Bussiness Accounts",
-    url: "/app/bussiness",
-    icon: Handshake,
-  },
-  {
-    title: "vehicles",
-    url: "/app/vehicles",
-    icon: Bike,
-  },
-];
-
+let items: any[];
+const role = sessionStorage.getItem("role") as string;
+if (role && role === "TENANT") {
+  items = [
+    {
+      title: "Assigned Vehicles",
+      url: "/app/rentals",
+      icon: ListCheck,
+    },
+  ];
+}else{
+  items= [
+    {
+      title: "Manage Bussiness Accounts",
+      url: "/app/bussiness",
+      icon: Handshake,
+    },
+    {
+      title: "vehicles",
+      url: "/app/vehicles",
+      icon: Bike,
+    },
+  ]
+}
 function AppSidebar() {
+  const navigate = useNavigate();
   return (
     <Sidebar>
       <SidebarContent>
@@ -57,7 +76,29 @@ function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter>
-        <ModeToggle />
+        <div className="flex justify-evenly">
+          <ModeToggle />
+
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  size="icon"
+                  variant="outline"
+                  onClick={() => {
+                    sessionStorage.clear();
+                    navigate("/login");
+                  }}
+                >
+                  <LogOut size={16} />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Logout</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </div>
       </SidebarFooter>
     </Sidebar>
   );
