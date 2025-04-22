@@ -42,7 +42,7 @@ export function verifyToken(req: Request, res: any, next: NextFunction) {
           return res
             .status(400)
             .json({
-              msg: "This account has been logged in from another device.",
+              message: "This account has been logged in from another device.",
             });
         next();
       }

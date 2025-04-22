@@ -83,9 +83,11 @@ function BussinessPricings() {
           className="mb-3"
           onClick={() => {
             setViewPricings(!viewPricings);
+            getPricingsList();
           }}
         >
-          View Pricings
+          {!viewPricings && "View Pricings"}
+          {viewPricings && "ADD Pricings"}
         </Button>
       </div>
       <Card>

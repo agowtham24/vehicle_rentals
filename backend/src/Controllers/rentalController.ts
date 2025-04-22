@@ -92,7 +92,7 @@ export async function getRentalsByBussiness(
               $project: {
                 mobile: 1,
                 name: 1,
-                _id:1
+                _id: 1,
               },
             },
           ],
@@ -165,7 +165,12 @@ export const deAssignVehicleToBussiness = async (
 ) => {
   try {
     const { batteries, vehicleId, rentalId } = req.body;
-
+    const isRiderAssigned = await service.findOne(DB_COLLECTIONS.rentals, {
+      _id: await convertToObjectId(rentalId as string),
+      riderId: { $exists: true },
+    });
+    if (isRiderAssigned)
+      return res.status(400).json({ message: "Rider already assigned." });
     const objectBatteryIds = await Promise.all(
       batteries.map((id: string) => convertToObjectId(id))
     );
@@ -215,7 +220,7 @@ export const assignRider = async (
       { _id: rentalId },
       {
         riderId,
-        status:1
+        status: 1,
       }
     );
 
@@ -248,7 +253,7 @@ export const deAssignRider = async (
     await service.updateOne(
       DB_COLLECTIONS.rentals,
       { _id: rentalId },
-      { $unset: { riderId: "" },status:0 }
+      { $unset: { riderId: "" }, status: 0 }
     );
 
     // 2. Reset rider data
@@ -256,11 +261,15 @@ export const deAssignRider = async (
       DB_COLLECTIONS.riders,
       { _id: riderId },
       {
-        isActiveRide: false,
-        status: "ACTIVE",
-        rentalId: null,
-        vehicleId: null,
-        bussinessId: null,
+        $set: {
+          isActiveRide: false,
+          status: "ACTIVE",
+        },
+        $unset: {
+          rentalId: "",
+          vehicleId: "",
+          bussinessId: "",
+        },
       }
     );
 

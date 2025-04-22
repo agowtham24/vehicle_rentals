@@ -30,7 +30,7 @@ export async function getRiderByMobile(
     const data = await service.find(
       DB_COLLECTIONS.riders,
       { mobile: { $regex: regex }, status: "ACTIVE" },
-      { mobile: 1, status: 1 }
+      { mobile: 1, status: 1,name:1 }
     );
     return res.status(200).json({ status: true, message: "success", data });
   } catch (error) {

@@ -26,7 +26,7 @@ import withErrorHandler from "@/lib/ErrorHandler";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { useSearchParams,useNavigate } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 
 import { z } from "zod";
 
@@ -37,10 +37,10 @@ const formSchema = z.object({
 function AssignRider() {
   const [searchParams] = useSearchParams();
   const rentalId = searchParams.get("rentalId");
-const navigate=useNavigate()
+  const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [riders, setRiders] = useState<
-    { mobile: string; _id: string; name: string }[]
+    { mobile: string; _id: string; name: string,status:string }[]
   >([]);
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -62,18 +62,20 @@ const navigate=useNavigate()
         getRidersBySearch(search);
       }
     }, 1500); // debounce delay: 500ms
-  
+
     return () => clearTimeout(delayDebounce); // cleanup on each keystroke
   }, [search]);
 
-  const onSubmit = withErrorHandler(async (values: z.infer<typeof formSchema>) => {
-    await api.post(`${config.api_url}rentals/assignRider`, {
-      riderId: values.riderId,
-      rentalId
-    });
-    form.reset()
-navigate("/app/rentals")
-  });
+  const onSubmit = withErrorHandler(
+    async (values: z.infer<typeof formSchema>) => {
+      await api.post(`${config.api_url}rentals/assignRider`, {
+        riderId: values.riderId,
+        rentalId,
+      });
+      form.reset();
+      navigate("/app/rentals");
+    }
+  );
 
   return (
     <section className="container h-full">
@@ -84,29 +86,34 @@ navigate("/app/rentals")
             <CardDescription>Select and assign a rider.</CardDescription>
           </CardHeader>
           <CardContent>
-            <Input
-              placeholder="Search mobile number"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="mb-4"
-            />
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+              <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className="space-y-5"
+              >
                 <FormField
                   control={form.control}
                   name="riderId"
                   render={({ field }) => (
                     <FormItem>
                       <FormControl>
-                        <Select onValueChange={field.onChange} value={field.value}>
+                        <Select
+                          onValueChange={field.onChange}
+                          value={field.value}
+                        >
                           <SelectTrigger className="w-full">
                             <SelectValue placeholder="Select Rider" />
                           </SelectTrigger>
                           <SelectContent>
+                            <Input
+                              placeholder="Search mobile number"
+                              value={search}
+                              onChange={(e) => setSearch(e.target.value)}
+                            />
                             {riders.length > 0 ? (
                               riders.map((r) => (
                                 <SelectItem key={r._id} value={r._id}>
-                                  {r.name} ({r.mobile})
+                                  {r.name} ({r.mobile}) - {r.status}
                                 </SelectItem>
                               ))
                             ) : (

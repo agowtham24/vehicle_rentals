@@ -19,33 +19,32 @@ import {
 } from "@/components/ui/tooltip";
 import { Button } from "./ui/button";
 import { useNavigate } from "react-router-dom";
-// Menu items.
-let items: any[];
-const role = sessionStorage.getItem("role") as string;
-if (role && role === "TENANT") {
-  items = [
-    {
-      title: "Assigned Vehicles",
-      url: "/app/rentals",
-      icon: ListCheck,
-    },
-  ];
-}else{
-  items= [
-    {
-      title: "Manage Bussiness Accounts",
-      url: "/app/bussiness",
-      icon: Handshake,
-    },
-    {
-      title: "vehicles",
-      url: "/app/vehicles",
-      icon: Bike,
-    },
-  ]
-}
+
 function AppSidebar() {
   const navigate = useNavigate();
+  const role = sessionStorage.getItem("role") as string;
+
+  const items =
+    role === "TENANT"
+      ? [
+          {
+            title: "Assigned Vehicles",
+            url: "/app/rentals",
+            icon: ListCheck,
+          },
+        ]
+      : [
+          {
+            title: "Manage Bussiness Accounts",
+            url: "/app/bussiness",
+            icon: Handshake,
+          },
+          {
+            title: "vehicles",
+            url: "/app/vehicles",
+            icon: Bike,
+          },
+        ];
   return (
     <Sidebar>
       <SidebarContent>
