@@ -1,7 +1,12 @@
 import axios from "axios";
+const isProd = import.meta.env.PROD;
+
 export const config = {
-  api_url: "http://localhost:4000/api/v1/",
+  api_url: isProd
+    ? import.meta.env.VITE_API_URL
+    : "http://localhost:4000/api/v1/",
 };
+
 export const api = axios.create({
   baseURL: config.api_url,
 });
