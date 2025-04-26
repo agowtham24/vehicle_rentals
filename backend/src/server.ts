@@ -1,4 +1,13 @@
 import Config from "./config";
+if (!process.env.DB_URL) {
+  console.error("❌ DB_URL is not set in environment variables.");
+  process.exit(1);
+}
+
+if (!process.env.NODE_ENV) {
+  console.error("❌ NODE_ENV is not set in environment variables.");
+  process.exit(1);
+}
 import express, { Request, Response } from "express";
 import cors from "cors";
 import helmet from "helmet";
@@ -30,6 +39,20 @@ app.use(
 );
 app.use(helmet());
 app.use(requestLogger);
+
+app.get(`${Config.API_PREFIX}health`, async (req: Request, res: Response) => {
+  res.json({ message: "hai hello" });
+});
+
+app.use(`${Config.API_PREFIX}batteryModels`, batteryModelRouter);
+app.use(`${Config.API_PREFIX}vehicleModels`, vehicleModelRouter);
+app.use(`${Config.API_PREFIX}batteries`, batteryRouter);
+app.use(`${Config.API_PREFIX}vehicles`, vehicleRouter);
+app.use(`${Config.API_PREFIX}bussinessAccounts`, bussinessAccountRouter);
+app.use(`${Config.API_PREFIX}bussinessPricings`, bussinessPricingRouter);
+app.use(`${Config.API_PREFIX}riders`, riderRouter);
+app.use(`${Config.API_PREFIX}rentals`, rentalRouter);
+
 app.use(ErrorHandler);
 
 async function startServer() {
@@ -59,16 +82,3 @@ async function startServer() {
   }
 }
 startServer();
-
-app.get(`${Config.API_PREFIX}health`, async (req: Request, res: Response) => {
-  res.json({ message: "hai hello" });
-});
-
-app.use(`${Config.API_PREFIX}batteryModels`, batteryModelRouter);
-app.use(`${Config.API_PREFIX}vehicleModels`, vehicleModelRouter);
-app.use(`${Config.API_PREFIX}batteries`, batteryRouter);
-app.use(`${Config.API_PREFIX}vehicles`, vehicleRouter);
-app.use(`${Config.API_PREFIX}bussinessAccounts`, bussinessAccountRouter);
-app.use(`${Config.API_PREFIX}bussinessPricings`, bussinessPricingRouter);
-app.use(`${Config.API_PREFIX}riders`, riderRouter);
-app.use(`${Config.API_PREFIX}rentals`, rentalRouter);
