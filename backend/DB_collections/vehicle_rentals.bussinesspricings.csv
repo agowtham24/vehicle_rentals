@@ -1,0 +1,4 @@
+_id,bussinessId,vehicleModelId,plans[0].type,plans[1].type,plans[0].amount,plans[1].amount,plans[0].sdAmount,plans[1].sdAmount,plans[0].value,plans[1].value,plans[0].batteries,plans[1].batteries,plans[0].freeSwaps,plans[1].freeSwaps,plans[0].swapCharge,plans[1].swapCharge,plans[0]._id,plans[1]._id,createdAt,updatedAt,__v
+68031b9fe8ad814d976b5743,68007f3263947a59c4e0a267,6800dec99eaea741a23fe5f8,day,day,1000,400,3000,2000,7,7,1,1,0,2,0,300,6803563b34869fae6ccecd59,6803ac634b64e34629f9d8ba,2025-04-19T03:42:23.990Z,2025-04-19T14:00:03.776Z,0
+6803ad264b64e34629f9d8e8,68007f3263947a59c4e0a267,6800dee89eaea741a23fe5fa,day,,300,,2000,,7,,2,,2,,300,,6803ad264b64e34629f9d8e9,,2025-04-19T14:03:18.797Z,2025-04-19T14:03:18.797Z,0
+6807ab0334265e3a12934bfe,6807aa8e34265e3a12934bf0,6800dec99eaea741a23fe5f8,day,,100,,2000,,7,,1,,3,,100,,6807ab0334265e3a12934bff,,2025-04-22T14:43:15.187Z,2025-04-22T14:43:15.187Z,0

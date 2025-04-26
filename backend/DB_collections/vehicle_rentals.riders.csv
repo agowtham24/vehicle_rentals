@@ -1,0 +1,4 @@
+_id,name,mobile,status,isActiveRide,createdAt,updatedAt,__v,bussinessId,rentalId,vehicleId
+68038f7b7fed18f1eada6c89,gowtham,8008213299,ACTIVE,false,2025-04-19T11:56:44.016Z,2025-04-22T14:51:54.464Z,0,,,
+68038f917fed18f1eada6c8b,lokesh,9618791201,ACTIVE,false,2025-04-19T11:57:05.976Z,2025-04-22T14:52:58.951Z,0,,,
+68038fa37fed18f1eada6c8d,Parichay,0987654321,ACTIVE,false,2025-04-19T11:57:23.414Z,2025-04-19T11:57:23.414Z,0,,,

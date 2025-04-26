@@ -1,0 +1,3 @@
+_id,name,manufactureBy,batterySlots,isSwapable,image,topSpeed,batteryModelIds[0],batteryModelIds[1],createdAt,updatedAt,__v
+6800dec99eaea741a23fe5f8,vehicleModel1,testing1,2,true,https://www.tvsmotor.com/electric-scooters/tvs-iqube/-/media/Vehicles/Feature/Iqube/Variant/TVS-iQube/Color_Images/Titanium-Grey-Glossy/titanim-grey-glossy03.webp,100km/hr,6800dd4fefb9fabf3115d272,6800dd37efb9fabf3115d270,2025-04-17T10:58:17.017Z,2025-04-17T10:58:17.017Z,0
+6800dee89eaea741a23fe5fa,vehicleModel2,testing2,2,false,https://www.tvsmotor.com/electric-scooters/tvs-iqube/-/media/Vehicles/Feature/Iqube/Variant/TVS-iQube/Color_Images/Titanium-Grey-Glossy/titanim-grey-glossy03.webp,100km/hr,6800dd4fefb9fabf3115d272,,2025-04-17T10:58:48.483Z,2025-04-17T10:58:48.483Z,0
