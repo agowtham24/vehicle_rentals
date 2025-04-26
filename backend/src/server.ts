@@ -12,11 +12,9 @@ import express, { Request, Response } from "express";
 import cors from "cors";
 import helmet from "helmet";
 import compression from "compression";
-import figlet from "figlet";
-import chalk from "chalk";
 import "./Models";
 import { connectDB } from "./mongoDB-setup";
-import { requestLogger } from "./Middlewares/logger";
+// import { requestLogger } from "./Middlewares/logger";
 import vehicleModelRouter from "./Routes/vehicleModelRoutes";
 import vehicleRouter from "./Routes/vehicleRoutes";
 import batteryRouter from "./Routes/batteryRoutes";
@@ -38,7 +36,7 @@ app.use(
   })
 );
 app.use(helmet());
-app.use(requestLogger);
+// app.use(requestLogger);
 
 app.get(`${Config.API_PREFIX}health`, async (req: Request, res: Response) => {
   res.json({ message: "hai hello" });
@@ -60,17 +58,6 @@ async function startServer() {
     await connectDB();
     app.listen(Config.PORT, () => {
       console.log("..................................................");
-      console.log(
-        chalk.green(
-          figlet.textSync("VehicleRental", {
-            font: "Bulbhead",
-            horizontalLayout: "default",
-            verticalLayout: "default",
-            width: 80,
-            whitespaceBreak: true,
-          })
-        )
-      );
       console.log(
         `server running on port : ${Config.PORT} in ${Config.NODE_ENV} mode`
       );
