@@ -17,6 +17,10 @@ interface RentalSchema extends Document {
   status: number;
   returnDate: Date;
   returnStatus: number; // [0,1,2] ['On-time','early_return','delayed']
+  vehicleModel: string;
+  batteryId1: string;
+  batteryId2: string;
+  chargerId:string
 }
 
 const rentalSchema = new Schema<RentalSchema>(
@@ -36,12 +40,21 @@ const rentalSchema = new Schema<RentalSchema>(
       type: {
         type: String,
         enum: ["day", "week"],
-        required: true,
+        // required: true,
       },
-      amount: { type: Number, required: true },
-      value: { type: Number, required: true },
+      amount: {
+        type: Number,
+        //  required: true
+      },
+      value: {
+        type: Number,
+        //  required: true
+      },
     },
-    rentalEndDate: { type: Date, required: true },
+    rentalEndDate: {
+      type: Date,
+      //  required: true
+    },
     status: { type: Number, default: 0, enum: [0, 1, 2] }, // [0,1,2][created,riderAssigned,ended]
     returnDate: { type: Date },
     returnStatus: {

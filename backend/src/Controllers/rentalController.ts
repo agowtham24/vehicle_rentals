@@ -1,6 +1,7 @@
 import { Request, NextFunction } from "express";
 import { convertToObjectId, MongooseService } from "../mongoDB-setup";
 import Config from "../config";
+import xlsx from "xlsx";
 const DB_COLLECTIONS = Config.DB_COLLECTIONS;
 
 const service = new MongooseService();
@@ -106,7 +107,7 @@ export async function getRentalsByBussiness(
       },
       {
         $lookup: {
-          from: DB_COLLECTIONS.vehicles,
+          from: DB_COLLECTIONS.vehicles2,
           localField: "vehicleId",
           foreignField: "_id",
           as: "vehicle",
@@ -114,6 +115,9 @@ export async function getRentalsByBussiness(
             {
               $project: {
                 assetId: 1,
+                batteryId1: 1,
+                batteryId2: 1,
+                chargerId: 1,
               },
             },
           ],
@@ -127,8 +131,8 @@ export async function getRentalsByBussiness(
       },
       {
         $project: {
-          plan: 1,
-          rentalEndDate: 1,
+          // plan: 1,
+          // rentalEndDate: 1,
           rider: 1,
           vehicle: 1,
           status: 1,
@@ -274,6 +278,99 @@ export const deAssignRider = async (
     );
 
     return res.status(200).json({ message: "Rider de-assigned", status: true });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const bulkAssign = async (
+  req: Request,
+  res: any,
+  next: NextFunction
+) => {
+  try {
+    const { bussinessId } = req.body;
+
+    if (!req.file) {
+      return res
+        .status(400)
+        .json({ message: "No file uploaded or invalid file type" });
+    }
+
+    const buffer = req.file.buffer;
+    const workbook = xlsx.read(buffer, { type: "buffer" });
+    const sheetName = workbook.SheetNames[0];
+    const sheetData: any[] = xlsx.utils.sheet_to_json(
+      workbook.Sheets[sheetName]
+    );
+
+    if (!sheetData.length) {
+      return res.status(400).json({ message: "Empty Excel file" });
+    }
+
+    const assets: any[] = [];
+    const vehicleIds = sheetData.map((data) => data.vehicleId);
+
+    // Fetch all existing vehicles in a single query
+    const existingVehicles = await service.find(DB_COLLECTIONS.vehicles2, {
+      assetId: { $in: vehicleIds },
+    });
+
+    const existingVehicleMap = new Map<string, any>(
+      existingVehicles.map((vehicle: any) => [vehicle.assetId, vehicle])
+    );
+
+    for (const data of sheetData) {
+      const existingVehicle = existingVehicleMap.get(data.vehicleId);
+
+      if (existingVehicle) {
+        if (existingVehicle.status === "ASSIGNED") {
+          return res.status(400).json({
+            status: false,
+            message: `Vehicle ${data.vehicleId} is already assigned`,
+          });
+        }
+
+        // Update vehicle status to ASSIGNED
+        await service.updateOne(
+          DB_COLLECTIONS.vehicles2,
+          { _id: existingVehicle._id },
+          { status: "ASSIGNED" }
+        );
+
+        assets.push({
+          bussinessId,
+          vehicleId: existingVehicle._id,
+        });
+      } else {
+        // Create new vehicle
+        const newVehicle = await service.create(DB_COLLECTIONS.vehicles2, {
+          assetId: data.vehicleId,
+          batteryId1: data.batteryId1,
+          batteryId2: data.batteryId2,
+          chargerId: data.chargerId,
+          status: "ASSIGNED",
+        } as any);
+
+        assets.push({
+          bussinessId,
+          vehicleId: newVehicle._id,
+        });
+      }
+    }
+
+    if (assets.length) {
+      const insertedAssets = await service.insertMany(
+        DB_COLLECTIONS.rentals,
+        assets
+      );
+      return res.status(201).json({
+        message: "Assets created successfully",
+        assets: insertedAssets,
+      });
+    }
+
+    res.status(400).json({ message: "No assets were created or updated." });
   } catch (error) {
     next(error);
   }

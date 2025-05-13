@@ -6,3 +6,4 @@ import "./bussinesPricings";
 import "./rider";
 import "./rental";
 import "./batteryModel";
+import "./vehicle2";

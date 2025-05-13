@@ -31,6 +31,15 @@ export class MongooseService {
     return await doc.save();
   }
 
+  async insertMany<T extends Document>(
+    collectionName: string,
+    data: Partial<T>[]
+  ) {
+    const model = this.getModel<T>(collectionName);
+    return await model.insertMany(data);
+  }
+
+
   async updateOne<T extends Document>(
     collectionName: string,
     filter: FilterQuery<T>,

@@ -14,6 +14,7 @@ const Config = {
     rentals: "rentals",
     riders: "riders",
     vehicles: "vehicles",
+    vehicles2:"vehicles2",
     vehicleModels: "vehiclemodels",
   },
 };
