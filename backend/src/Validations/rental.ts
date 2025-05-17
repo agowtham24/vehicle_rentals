@@ -62,15 +62,15 @@ export class RentalValidator {
           .regex(/^[0-9a-fA-F]{24}$/)
           .message("vehicleId must be a valid MongoDB ObjectId")
           .required(),
-        batteries: Joi.array()
-          .items(
-            Joi.string()
-              .regex(/^[0-9a-fA-F]{24}$/)
-              .message("Each Battery must be a valid MongoDB ObjectId")
-          )
-          .min(1)
-          .max(2)
-          .required(),
+        // batteries: Joi.array()
+        //   .items(
+        //     Joi.string()
+        //       .regex(/^[0-9a-fA-F]{24}$/)
+        //       .message("Each Battery must be a valid MongoDB ObjectId")
+        //   )
+        //   .min(1)
+        //   .max(2)
+        //   .required(),
       });
       const { error } = schema.validate(req.body, { abortEarly: false });
       if (error)

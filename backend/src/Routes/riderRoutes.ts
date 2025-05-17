@@ -13,7 +13,7 @@ riderRouter.post("/", createRider);
 riderRouter.get(
   "/",
   verifyToken,
-  RiderValidator.getRiderByMobile,
+  // RiderValidator.getRiderByMobile,
   getRiderByMobile
 );
 riderRouter.patch("/:id", verifyToken, updateRider);

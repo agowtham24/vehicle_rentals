@@ -168,39 +168,39 @@ export const deAssignVehicleToBussiness = async (
   next: NextFunction
 ) => {
   try {
-    const { batteries, vehicleId, rentalId } = req.body;
+    const {  vehicleId, rentalId } = req.body;
     const isRiderAssigned = await service.findOne(DB_COLLECTIONS.rentals, {
       _id: await convertToObjectId(rentalId as string),
       riderId: { $exists: true },
     });
     if (isRiderAssigned)
       return res.status(400).json({ message: "Rider already assigned." });
-    const objectBatteryIds = await Promise.all(
-      batteries.map((id: string) => convertToObjectId(id))
-    );
+    // const objectBatteryIds = await Promise.all(
+    //   batteries.map((id: string) => convertToObjectId(id))
+    // );
 
     await service.updateOne(
-      DB_COLLECTIONS.vehicles,
+      DB_COLLECTIONS.vehicles2,
       { _id: await convertToObjectId(vehicleId) },
       {
         $set: { status: "READY_TO_ASSIGN" },
         $unset: {
           rentalId: "",
-          assosiatedBatteries: "",
+          // assosiatedBatteries: "",
         },
       }
     );
 
-    await service.updateMany(
-      DB_COLLECTIONS.batteries,
-      { _id: { $in: objectBatteryIds } },
-      {
-        $set: { status: "READY_TO_ASSIGN" },
-        $unset: {
-          rentalId: "",
-        },
-      }
-    );
+    // await service.updateMany(
+    //   DB_COLLECTIONS.batteries,
+    //   { _id: { $in: objectBatteryIds } },
+    //   {
+    //     $set: { status: "READY_TO_ASSIGN" },
+    //     $unset: {
+    //       rentalId: "",
+    //     },
+    //   }
+    // );
 
     await service.deleteOne(DB_COLLECTIONS.rentals, {
       _id: await convertToObjectId(rentalId as string),
@@ -309,6 +309,7 @@ export const bulkAssign = async (
     }
 
     const assets: any[] = [];
+    const alreadyAssigned: any[] = [];
     const vehicleIds = sheetData.map((data) => data.vehicleId);
 
     // Fetch all existing vehicles in a single query
@@ -325,22 +326,15 @@ export const bulkAssign = async (
 
       if (existingVehicle) {
         if (existingVehicle.status === "ASSIGNED") {
-          return res.status(400).json({
-            status: false,
-            message: `Vehicle ${data.vehicleId} is already assigned`,
-          });
+          alreadyAssigned.push({ vehicleId: data.vehicleId });
+          continue;
         }
 
-        // Update vehicle status to ASSIGNED
-        await service.updateOne(
-          DB_COLLECTIONS.vehicles2,
-          { _id: existingVehicle._id },
-          { status: "ASSIGNED" }
-        );
-
+        // Prepare rental asset
         assets.push({
           bussinessId,
           vehicleId: existingVehicle._id,
+          vehicleModel:data.vehicleModel
         });
       } else {
         // Create new vehicle
@@ -355,22 +349,33 @@ export const bulkAssign = async (
         assets.push({
           bussinessId,
           vehicleId: newVehicle._id,
+             vehicleModel:data.vehicleModel
         });
       }
     }
 
+    let insertedAssets = [];
     if (assets.length) {
-      const insertedAssets = await service.insertMany(
-        DB_COLLECTIONS.rentals,
-        assets
-      );
-      return res.status(201).json({
-        message: "Assets created successfully",
-        assets: insertedAssets,
+      // Insert rentals first
+      insertedAssets = await service.insertMany(DB_COLLECTIONS.rentals, assets);
+
+      // Update vehicle documents with rentalId
+      const updatePromises = insertedAssets.map(async (asset:any) => {
+        return service.updateOne(
+          DB_COLLECTIONS.vehicles2,
+          { _id: asset.vehicleId },
+          { status: "ASSIGNED", rentalId: asset._id,vehicleModelId:asset.vehicleModel }
+        );
       });
+      await Promise.all(updatePromises);
     }
 
-    res.status(400).json({ message: "No assets were created or updated." });
+    return res.status(201).json({
+      message: "Operation completed",
+      assignedCount: insertedAssets.length,
+      alreadyAssignedCount: alreadyAssigned.length,
+      alreadyAssigned,
+    });
   } catch (error) {
     next(error);
   }

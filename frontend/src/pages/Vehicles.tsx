@@ -20,7 +20,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import withErrorHandler from "@/lib/ErrorHandler";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { AssignVehicleToBussiness } from "@/lib/forms";
+import {
+  AssignVehicleToBussiness,
+  AssignVehicleToBussiness2,
+} from "@/lib/forms";
 import { toast } from "sonner";
 
 type Vehicle = {
@@ -38,11 +41,10 @@ type Vehicle = {
       image: string;
     };
   };
-  vehicleModel: {
-    name: string;
-    image: string;
-  };
-  batteries: [{ _id: string; name: string }];
+  vehicleModelId: string;
+  batteryId2: string;
+  batteryId1: string;
+  chargerId: string;
   status: string;
 };
 
@@ -62,12 +64,12 @@ function Vehicles() {
     async (
       rentalId: string,
       vehicleId: string,
-      batteries: [{ _id: string; name: string }]
+      // batteries: [{ _id: string; name: string }]
     ) => {
       const data = {
         rentalId,
         vehicleId,
-        batteries: batteries.map((item) => item._id),
+        // batteries: batteries.map((item) => item._id),
       };
 
       await api.post(`${config.api_url}rentals/deAssign`, data);
@@ -108,7 +110,7 @@ function Vehicles() {
                 <TableRow>
                   <TableHead>AssetId</TableHead>
                   <TableHead>VehicleModel Name</TableHead>
-                  <TableHead>Image</TableHead>
+                  {/* <TableHead>Image</TableHead> */}
                   <TableHead>Status</TableHead>
                 </TableRow>
               </TableHeader>
@@ -117,14 +119,14 @@ function Vehicles() {
                   vehicles.map((vehicle: Vehicle) => (
                     <TableRow key={vehicle._id}>
                       <TableCell>{vehicle.assetId}</TableCell>
-                      <TableCell>{vehicle.vehicleModel.name}</TableCell>
-                      <TableCell>
+                      <TableCell>{vehicle.vehicleModelId}</TableCell>
+                      {/* <TableCell>
                         <img
                           src={vehicle.vehicleModel.image}
                           alt="vehicle"
                           className="h-16 w-20"
                         />
-                      </TableCell>
+                      </TableCell> */}
                       <TableCell className="text-primary">
                         {vehicle.status}
                       </TableCell>
@@ -140,7 +142,7 @@ function Vehicles() {
                 <TableRow>
                   <TableHead>AssetId</TableHead>
                   <TableHead>VehicleModel Name</TableHead>
-                  <TableHead>Image</TableHead>
+                  {/* <TableHead>Image</TableHead> */}
                   <TableHead>Status</TableHead>
                   <TableHead>Bussiness Details</TableHead>
                   <TableHead>Actions</TableHead>
@@ -151,14 +153,14 @@ function Vehicles() {
                   vehicles.map((vehicle: Vehicle) => (
                     <TableRow key={vehicle._id}>
                       <TableCell>{vehicle.assetId}</TableCell>
-                      <TableCell>{vehicle.vehicleModel.name}</TableCell>
-                      <TableCell>
+                      <TableCell>{vehicle.vehicleModelId}</TableCell>
+                      {/* <TableCell>
                         <img
                           src={vehicle.vehicleModel.image}
                           alt="vehicle"
                           className="h-16 w-20"
                         />
-                      </TableCell>
+                      </TableCell> */}
                       <TableCell className="text-destructive">
                         {vehicle.status}
                       </TableCell>
@@ -180,7 +182,7 @@ function Vehicles() {
                             deAssignVehicle(
                               vehicle.rental._id,
                               vehicle._id,
-                              vehicle.batteries
+                              // vehicle.batteries
                             )
                           }
                         >
@@ -204,7 +206,7 @@ function Vehicles() {
               <DialogDescription>
                 Here you can assign vehicle to Bussiness.
               </DialogDescription>
-              <AssignVehicleToBussiness />
+              <AssignVehicleToBussiness2 />
             </DialogHeader>
           </DialogContent>
         </Dialog>

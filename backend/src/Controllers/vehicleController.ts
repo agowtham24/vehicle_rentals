@@ -25,7 +25,7 @@ export async function getVehiclesByStatus(
 ) {
   try {
     const { status } = req.query;
-    const data = await service.aggregate(DB_COLLECTIONS.vehicles, [
+    const data = await service.aggregate(DB_COLLECTIONS.vehicles2, [
       {
         $match: { status },
       },
@@ -52,46 +52,46 @@ export async function getVehiclesByStatus(
           preserveNullAndEmptyArrays: true,
         },
       },
-      {
-        $lookup: {
-          from: DB_COLLECTIONS.vehicleModels,
-          localField: "vehicleModelId",
-          foreignField: "_id",
-          as: "vehicleModel",
-          pipeline: [
-            {
-              $project: {
-                _id: 0,
-                name: 1,
-                image: 1,
-              },
-            },
-          ],
-        },
-      },
-      {
-        $unwind: {
-          path: "$vehicleModel",
-          preserveNullAndEmptyArrays: true,
-        },
-      },
+      // {
+      //   $lookup: {
+      //     from: DB_COLLECTIONS.vehicleModels,
+      //     localField: "vehicleModelId",
+      //     foreignField: "_id",
+      //     as: "vehicleModel",
+      //     pipeline: [
+      //       {
+      //         $project: {
+      //           _id: 0,
+      //           name: 1,
+      //           image: 1,
+      //         },
+      //       },
+      //     ],
+      //   },
+      // },
+      // {
+      //   $unwind: {
+      //     path: "$vehicleModel",
+      //     preserveNullAndEmptyArrays: true,
+      //   },
+      // },
       // Lookup batteries
-      {
-        $lookup: {
-          from: DB_COLLECTIONS.batteries,
-          localField: "assosiatedBatteries",
-          foreignField: "_id",
-          as: "batteries",
-          pipeline: [
-            {
-              $project: {
-                _id: 1,
-                name: 1,
-              },
-            },
-          ],
-        },
-      },
+      // {
+      //   $lookup: {
+      //     from: DB_COLLECTIONS.batteries,
+      //     localField: "assosiatedBatteries",
+      //     foreignField: "_id",
+      //     as: "batteries",
+      //     pipeline: [
+      //       {
+      //         $project: {
+      //           _id: 1,
+      //           name: 1,
+      //         },
+      //       },
+      //     ],
+      //   },
+      // },
       {
         $lookup: {
           from: DB_COLLECTIONS.rentals,
@@ -147,8 +147,10 @@ export async function getVehiclesByStatus(
           assetId: 1,
           rider: 1,
           rental: 1,
-          vehicleModel: 1,
-          batteries: 1,
+          vehicleModelId: 1,
+         batteryId2:1,
+         batteryId1:1,
+         chargerId:1,
           status: 1,
         },
       },

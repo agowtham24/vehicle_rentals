@@ -55,6 +55,7 @@ const rentalSchema = new Schema<RentalSchema>(
       type: Date,
       //  required: true
     },
+    vehicleModel:{type:String},
     status: { type: Number, default: 0, enum: [0, 1, 2] }, // [0,1,2][created,riderAssigned,ended]
     returnDate: { type: Date },
     returnStatus: {

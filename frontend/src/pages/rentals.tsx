@@ -20,9 +20,11 @@ function Rentals() {
   const [status, setStatus] = useState(0);
   const userId = sessionStorage.getItem("userId") as string;
   const getRentals = withErrorHandler(async (id, status) => {
+   
     const res = await api.get(
       `${config.api_url}rentals?bussinessId=${id}&status=${status}`
     );
+     console.log(res.data.data,"res")
     setRentals(res.data.data);
   });
 
@@ -68,8 +70,8 @@ function Rentals() {
               <TableHeader>
                 <TableRow>
                   <TableHead>AssetId</TableHead>
-                  <TableHead>Plan Details</TableHead>
-                  <TableHead>Rental End Date</TableHead>
+                  {/* <TableHead>Plan Details</TableHead> */}
+                  {/* <TableHead>Rental End Date</TableHead> */}
                   <TableHead>Status</TableHead>
                   <TableHead>Actions</TableHead>
                 </TableRow>
@@ -79,16 +81,16 @@ function Rentals() {
                   rentals.map((rental) => (
                     <TableRow key={rental._id}>
                       <TableCell>{rental.vehicle?.assetId}</TableCell>
-                      <TableCell>
+                      {/* <TableCell>
                         <div>{`${rental.plan?.value} ${rental.plan?.type}s`}</div>
-                      </TableCell>
-                      <TableCell>
+                      </TableCell> */}
+                      {/* <TableCell>
                         {
                           new Date(rental.rentalEndDate)
                             .toISOString()
                             .split("T")[0]
                         }
-                      </TableCell>
+                      </TableCell> */}
                       <TableCell className="text-primary">
                         {rental.status === 0 && "READY_TO_ASSIGN"}
                       </TableCell>
@@ -110,9 +112,9 @@ function Rentals() {
               <TableHeader>
                 <TableRow>
                   <TableHead>AssetId</TableHead>
-                  <TableHead>Plan Details</TableHead>
+                  {/* <TableHead>Plan Details</TableHead> */}
                   <TableHead>Rider Details</TableHead>
-                  <TableHead>Rental End Date</TableHead>
+                  {/* <TableHead>Rental End Date</TableHead> */}
                   <TableHead>Status</TableHead>
                   <TableHead>Actions</TableHead>
                 </TableRow>
@@ -122,20 +124,20 @@ function Rentals() {
                   rentals.map((rental) => (
                     <TableRow key={rental._id}>
                       <TableCell>{rental.vehicle?.assetId}</TableCell>
-                      <TableCell>
+                      {/* <TableCell>
                         <div>{`${rental.plan?.value} ${rental.plan?.type}s`}</div>
-                      </TableCell>
+                      </TableCell> */}
                       <TableCell>
                         <div>{rental.rider?.name}</div>
                         <div>{rental.rider?.mobile}</div>
                       </TableCell>
-                      <TableCell>
+                      {/* <TableCell>
                         {
                           new Date(rental.rentalEndDate)
                             .toISOString()
                             .split("T")[0]
                         }
-                      </TableCell>
+                      </TableCell> */}
                       <TableCell className="text-destructive">
                         {rental.status === 1 && "RIDER_ASSIGNED"}
                       </TableCell>

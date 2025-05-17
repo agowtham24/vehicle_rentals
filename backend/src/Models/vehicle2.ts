@@ -11,7 +11,7 @@ interface VehicleSchema extends Document {
   status: string; //enum: ["READY_TO_ASSIGN", "ASSIGNED", "IN_SERVICE"]
   riderId?: mongoose.Schema.Types.ObjectId;
   rentalId?: mongoose.Schema.Types.ObjectId;
-  vehicleModelId: mongoose.Schema.Types.ObjectId;
+  vehicleModelId: string;
   registrationNo: string;
   registeryName: string;
   registrationDate: Date;

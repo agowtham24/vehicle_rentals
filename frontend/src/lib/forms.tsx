@@ -29,7 +29,7 @@ import {
   SelectItem,
 } from "@/components/ui/select";
 import { Plus, Minus } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { BussinessAccount } from "@/pages/BussinessAccounts";
 
@@ -785,6 +785,107 @@ export const AssignVehicleToBussiness = () => {
 
         <div className="flex justify-center mt-6">
           <Button type="submit">Assign Vehicle</Button>
+        </div>
+      </form>
+    </Form>
+  );
+};
+
+export const AssignVehicleToBussiness2 = () => {
+  const [tenants, setTenants] = useState([] as BussinessAccount[]);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  const form = useForm({
+    defaultValues: {
+      bussinessId: "",
+      file: null,
+    },
+  });
+
+  const onSubmit = withErrorHandler(async (values: any) => {
+    const formData = new FormData();
+    formData.append("bussinessId", values.bussinessId);
+    formData.append("file", values.file[0]);
+
+    await api.post(`${config.api_url}rentals/bulk`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+
+    toast.success("Success", {
+      description: "Vehicles assigned successfully.",
+    });
+    form.reset();
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  });
+
+  const getTenants = withErrorHandler(async () => {
+    const res = await api.get(`${config.api_url}bussinessAccounts`);
+    setTenants(res.data.data);
+  });
+
+  useEffect(() => {
+    getTenants();
+  }, []);
+
+  return (
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+        {/* Business */}
+        <FormField
+          control={form.control}
+          name="bussinessId"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Business</FormLabel>
+              <FormControl>
+                <Select
+                  value={field.value}
+                  onValueChange={field.onChange}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select business" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {tenants.length > 0 &&
+                      tenants.map((tenant: BussinessAccount) => (
+                        <SelectItem key={tenant._id} value={tenant._id}>
+                          {tenant.name}
+                        </SelectItem>
+                      ))}
+                  </SelectContent>
+                </Select>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        {/* File Upload */}
+        <FormField
+          control={form.control}
+          name="file"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Upload Excel</FormLabel>
+              <FormControl>
+                <input
+                  type="file"
+                  accept=".xlsx, .xls"
+                  ref={fileInputRef}
+                  onChange={(e) => field.onChange(e.target.files)}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <div className="flex justify-center mt-6">
+          <Button type="submit">Assign Vehicles</Button>
         </div>
       </form>
     </Form>
