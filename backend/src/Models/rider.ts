@@ -12,10 +12,30 @@ interface RiderSchema extends Document {
   vehicleId: mongoose.Schema.Types.ObjectId;
   rentalId: mongoose.Schema.Types.ObjectId;
   bussinessId: mongoose.Schema.Types.ObjectId;
+  dob: Date;
+  pan: string;
+  aadhar: string;
+  drivingLicense: string;
 }
 
 const riderSchema = new Schema<RiderSchema>(
   {
+    dob: {
+      type: Date,
+      required: true,
+    },
+    pan: {
+      type: String,
+      required: true,
+    },
+    aadhar: {
+      type: String,
+      required: true,
+    },
+    drivingLicense: {
+      type: String,
+      required: true,
+    },
     name: { type: String, required: true },
     mobile: { type: String, required: true, unique: true },
     status: {
@@ -24,7 +44,7 @@ const riderSchema = new Schema<RiderSchema>(
       default: "ACTIVE",
     },
     isActiveRide: { type: Boolean, default: false },
-    isSdPaid: { type: Boolean},
+    isSdPaid: { type: Boolean },
     isRentPaid: { type: Boolean },
     sdAmount: { type: Number },
     vehicleId: {

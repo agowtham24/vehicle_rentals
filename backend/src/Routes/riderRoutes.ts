@@ -9,7 +9,7 @@ import { verifyToken } from "../Utils/Jwt";
 
 const riderRouter = Router();
 
-riderRouter.post("/", createRider);
+riderRouter.post("/", RiderValidator.create, createRider);
 riderRouter.get(
   "/",
   verifyToken,

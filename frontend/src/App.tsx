@@ -14,6 +14,8 @@ import PlanForm from "./pages/PlanForm";
 import Vehicles from "./pages/Vehicles";
 import Rentals from "./pages/rentals";
 import AssignRider from "./pages/assignRider";
+import { ThankYouPage } from "./components/thankyouPage";
+import RiderRigister from "./pages/riderRegister";
 const router = createBrowserRouter([
   {
     path: "/login",
@@ -55,6 +57,14 @@ const router = createBrowserRouter([
         ],
       },
     ],
+  },
+  {
+    path: "/rider-register",
+    element: <RiderRigister />
+  },
+  {
+    path: "/thank-you",
+    element: <ThankYouPage />
   },
   {
     path: "*",

@@ -32,6 +32,7 @@ import { Plus, Minus } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { BussinessAccount } from "@/pages/BussinessAccounts";
+import { useNavigate } from "react-router-dom";
 
 type VehicleModel = {
   _id: string;
@@ -886,6 +887,141 @@ export const AssignVehicleToBussiness2 = () => {
 
         <div className="flex justify-center mt-6">
           <Button type="submit">Assign Vehicles</Button>
+        </div>
+      </form>
+    </Form>
+  );
+};
+
+const riderRegisterSchema = z.object({
+  mobile: z.string().min(10, "Mobile number must be at least 10 digits"),
+  name: z.string().min(2, "Name is required"),
+  dob: z.string().min(1, "Date of birth is required"),
+  pan: z.string().min(10, "PAN must be 10 characters"),
+  aadhar: z
+    .string()
+    .length(12, "Aadhar must be 12 digits")
+    .regex(/^\d+$/, "Aadhar must be numeric"),
+  drivingLicense: z.string().min(5, "Driving license is required"),
+});
+
+
+export const RiderRegisterForm = () => {
+  const navigate = useNavigate()
+  const form = useForm<z.infer<typeof riderRegisterSchema>>({
+    resolver: zodResolver(riderRegisterSchema),
+    defaultValues: {
+      mobile: "",
+      name: "",
+      dob: "",
+      pan: "",
+      aadhar: "",
+      drivingLicense: "",
+    },
+  });
+
+  const onSubmit = withErrorHandler(
+    async (values: z.infer<typeof riderRegisterSchema>) => {
+      await api.post(`${config.api_url}riders`, values);
+      toast.success("Success", {
+        description: "Rider registered successfully.",
+      });
+      form.reset();
+      navigate("/thank-you")
+    }
+  );
+
+  return (
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <FormField
+            control={form.control}
+            name="mobile"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Mobile</FormLabel>
+                <FormControl>
+                  <Input type="text" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="name"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Name</FormLabel>
+                <FormControl>
+                  <Input type="text" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="dob"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Date of Birth</FormLabel>
+                <FormControl>
+                  <Input type="date" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="pan"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>PAN</FormLabel>
+                <FormControl>
+                  <Input type="text" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="aadhar"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Aadhar</FormLabel>
+                <FormControl>
+                  <Input type="text" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="drivingLicense"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Driving License</FormLabel>
+                <FormControl>
+                  <Input type="text" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+
+        <div className="flex justify-center">
+          <Button type="submit">Register Rider</Button>
         </div>
       </form>
     </Form>
